@@ -10,6 +10,7 @@ class AdminController extends Controller
 {
     public function index()
     {
+    
         $x = Auction::orderBy('auction_price', 'DESC')->get()->groupBy(function ($val) {
             return Carbon::parse($val->created_at)->format('Y-m');
         });
@@ -47,4 +48,17 @@ class AdminController extends Controller
 
         return view('admin.index', ['income'=>$ans]);
     }
+
+    public function chat(Request $request)
+    {
+        return view('admin.chat');
+    }
+
+
+
+public function chatDetail(Request $request,$id)
+    {
+        return view('admin.detail-chat',['id'=>$id]);
+    }
+
 }

@@ -30,7 +30,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.create-or-edit',['act'=>'create']);
+        return view('admin.create-or-edit', ['act'=>'create']);
     }
 
     /**
@@ -41,14 +41,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'name' => ['required', 'string', 'max:255',new NumWords(2)],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', Rules\Password::defaults()],
         ]);
 
-        $name = explode(' ',$request->name);
+        $name = explode(' ', $request->name);
 
 
         $back = sprintf('%06X', mt_rand(0xFF9999, 0xFFFF00));
@@ -60,6 +59,9 @@ class UserController extends Controller
             'email' => $request->email,
             'thumb' => $img,
             'phone' => $request->phone,
+            'state' => $request->state,
+            'country' => $request->country,
+            'zipcode' => $request->zipcode,
             'address' => $request->address,
             'role' => $request->role,
             'password' => Hash::make($request->password),
@@ -98,7 +100,6 @@ class UserController extends Controller
             'data' => $data,
             'act' => 'edit'
         ]);
-
     }
 
     /**
@@ -110,14 +111,18 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-            User::update(
-                ['name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'role' => $request->role
-            ]);
+        User::where('id',$id)->update(
+            [
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'state' => $request->state,
+            'country' => $request->country,
+            'zipcode' => $request->zipcode,
+            'address' => $request->address,
+            'role' => $request->role,
+            ]
+        );
 
         return redirect()->back()->with(['message'=>'User berhasil di update','status'=>'success']);
     }
@@ -131,6 +136,6 @@ class UserController extends Controller
     public function destroy($id)
     {
         User::destroy($id);
-        return redirect()->route('admin.index')->with(['message'=>'User berhasil di delete','status'=>'success']);
+        return redirect()->route('admin.user.index')->with(['message'=>'User berhasil di delete','status'=>'success']);
     }
 }

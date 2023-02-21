@@ -11,6 +11,9 @@ use Validator;
 use App\Services\Midtrans\CreateSnapTokenService;
 use Carbon\Carbon;
 use App\Rules\GreatherThanMaxBid;
+use Illuminate\Validation\Rules;
+
+use App\Rules\NumWords;
 
 class ApiController extends Controller
 {
@@ -28,45 +31,52 @@ class ApiController extends Controller
             }
 
             $data['current_bid'] = Auction::where('product_id', $data->id)->count();
-            $data['highest_bid'] = number_format(!is_null($ac = Auction::where('product_id', $data->id)->orderBy('auction_price','DESC')->first()) ? $ac->auction_price: 0,0,',','.');
+            $data['highest_bid'] = number_format(!is_null($ac = Auction::where('product_id', $data->id)->orderBy('auction_price', 'DESC')->first()) ? $ac->auction_price : 0, 0, ',', '.');
             $data['auction_closed'] = date_format(date_create($data->end_auction), 'F m, H:i (e)') ;
             $data['start_from'] = number_format($data->start_from, 0, ',', '.');
-            return response()->json(['data'=>$data], 200);
+            return response()->json(['data'=>$data], 200)->header('Content-Type', 'application/json');
         } else {
-            $data = Product::all();
-            $solve = [];
-            foreach ($data as $key => $value) {
-                $solve[$key]= $value;
-                $solve[$key]['thumb'] = env('API_URL').'/thumb/'.$value->thumb;
+            if (isset($_GET['q'])) {
+                $data = Product::where('name', 'LIKE', '%'.$_GET['q'].'%')->get();
+                $solve = [];
+                foreach ($data as $key => $value) {
+                    $solve[$key]= $value;
+                    $solve[$key]['thumb'] = env('API_URL').'/thumb/'.$value->thumb;
+                }
+            } else {
+                $data = Product::all();
+                $solve = [];
+                foreach ($data as $key => $value) {
+                    $solve[$key]= $value;
+                    $solve[$key]['thumb'] = env('API_URL').'/thumb/'.$value->thumb;
+                }
             }
+          
             return response()->json(['data'=>$solve], 200);
         }
     }
 
     public function bidder(Request $request)
     {
-
-
-        $data = Auction::where('product_id', $_GET['id'])->orderBy('auction_price','DESC')->get();
+        $data = Auction::where('product_id', $_GET['id'])->orderBy('auction_price', 'DESC')->get();
 
         foreach ($data as $key => $value) {
             $data[$key]['name'] = $value->user->name;
             $data[$key]['auction_price'] = 'Rp.'.number_format($value->auction_price, 0, ',', '.');
 
             if ($key == 0) {
-                $data[$key]['is_win'] = TRUE;
+                $data[$key]['is_win'] = true;
             } else {
-                $data[$key]['is_win'] = FALSE;
-
+                $data[$key]['is_win'] = false;
             }
 
             if ($request->user()->id == $value->user->id) {
-                $data[$key]['is_you'] = TRUE;
+                $data[$key]['is_you'] = true;
             } else {
-                $data[$key]['is_you'] = FALSE;
+                $data[$key]['is_you'] = false;
             }
         }
-        return response()->json(['data'=>$data], 200);
+        return response()->json(['data'=>$data], 200)->header('Content-Type', 'application/json');
     }
 
     public function banner()
@@ -77,11 +87,12 @@ class ApiController extends Controller
             $solve[$key]= $value;
             $solve[$key]['thumb'] = env('API_URL').'/thumbBanner/'.$value->thumb;
         }
-        return response()->json(['data'=>$solve], 200);
+        return response()->json(['data'=>$solve], 200)->header('Content-Type', 'application/json');
     }
 
     public function edit(Request $request)
     {
+
         $this->validate($request, [
             'name'=>'required',
             'phone'=>'required',
@@ -91,16 +102,41 @@ class ApiController extends Controller
             'country'=>'required',
         ]);
 
-        User::where('id', $request->user()->id)->update([
-            'name'=>$request->name,
-            'phone'=>$request->phone,
-            'address'=>$request->address,
-            'state'=>$request->state,
-            'zipcode'=>$request->zipcode,
-            'country'=>$request->country,
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $thumbname = time() . '-' . $file->getClientOriginalName();
+            $file->move(public_path() . '/avatar' . '/', $thumbname);
 
-        ]);
-        return response()->json(['message'=>'sudah ter edit','data'=>User::where('id', $request->user()->id)->first()], 200);
+
+            User::where('id', $request->user()->id)->update([
+                'name'=>$request->name,
+                'phone'=>$request->phone,
+                'address'=>$request->address,
+                'state'=>$request->state,
+                'zipcode'=>$request->zipcode,
+                'country'=>$request->country,
+                'thumb' => $thumbname,
+            ]);
+        } else {
+            User::where('id', $request->user()->id)->update([
+                'name'=>$request->name,
+                'phone'=>$request->phone,
+                'address'=>$request->address,
+                'state'=>$request->state,
+                'zipcode'=>$request->zipcode,
+                'country'=>$request->country,
+            ]);
+        }
+
+
+        $user = User::where('id', $request->user()->id)->first();
+        if (strpos($user->thumb, "https://")!==false) {
+            $user->thumb = $user->thumb;
+        }else {
+            $user->thumb = env('API_URL').'/avatar/'.$user->thumb;
+        }
+
+        return response()->json(['message'=>'sudah ter edit','data'=>$user], 200)->header('Content-Type', 'application/json');
     }
 
 
@@ -144,46 +180,61 @@ class ApiController extends Controller
             $data[$key]['product'] = $value->product;
             $data[$key]['product']['thumb'] = env('API_URL').'/thumb/'.$data[$key]['product']['thumb'];
         }
-        return response()->json(['data'=>$data], 200);
+        return response()->json(['data'=>$data], 200)->header('Content-Type', 'application/json');
     }
 
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8'
+            'name' => ['required','string','max:255', new NumWords(2)],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', Rules\Password::defaults()]
         ]);
+        
+        
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors())->header('Content-Type', 'application/json');
         }
 
+ $back = sprintf('%06X', mt_rand(0xFF9999, 0xFFFF00));
+        $color = substr(str_shuffle('ABCDEF0123456789'), 0, 6);
+        $img = "https://ui-avatars.com/api/?name=".$request->name."&color=7F9CF5&background=EBF4FF";
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+             'role' => 1,
+            'thumb' => $img,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()
-            ->json(['data' => $user,'access_token' => $token, 'token_type' => 'Bearer', ]);
+            ->json(['data' => $user,'access_token' => $token, 'token_type' => 'Bearer', ])->header('Content-Type', 'application/json');
     }
 
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()
-                ->json(['message' => 'Unauthorized'], 401);
+                ->json(['message' => 'Unauthorized'], 401)->header('Content-Type', 'application/json');
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        if (strpos($user->thumb, "https://")!==false) {
+            $user->thumb = $user->thumb;
+        }else {
+            $user->thumb = env('API_URL').'/avatar/'.$user->thumb;
+        }
+
+
         return response()
-            ->json(['data' => $user,'message' => 'Hi '.$user->name.', welcome to home','access_token' => $token, 'token_type' => 'Bearer', ]);
+            ->json(['data' => $user,'message' => 'Hi '.$user->name.', welcome to home','access_token' => $token, 'token_type' => 'Bearer', ])->header('Content-Type', 'application/json');
     }
 
     // method for user logout and delete token
@@ -222,7 +273,7 @@ class ApiController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message'=>$validator->errors()->first('auction_price')], 400);
+            return response()->json(['message'=>$validator->errors()->first('auction_price')], 400)->header('Content-Type', 'application/json');
         }
 
 
@@ -234,13 +285,12 @@ class ApiController extends Controller
         ]);
 
 
-        return response()->json(['message'=>'success'], 200);
+        return response()->json(['message'=>'success'], 200)->header('Content-Type', 'application/json');
     }
 
     public function cancelBid(Request $request)
     {
         Auction::find($_GET['id'])->delete();
-        return response()->json(['message'=>'Auction Terdelete','status'=>'success'], 200);
+        return response()->json(['message'=>'Auction Terdelete','status'=>'success'], 200)->header('Content-Type', 'application/json');
     }
 }
-

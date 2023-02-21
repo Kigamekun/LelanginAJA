@@ -8,10 +8,31 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Dashboard - Analytics | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
+    <title>LelanginAJA | The best partner for your "Lelang"</title>
+<meta name="description" content="LelanginAJA is a super app that will help you find auction items in Indonesia which can give you a realtime experience in participating in auctions comfortably.">
+    <meta name="keywords" content="LelanginAJA, lelang indonesia, lelang">
+    <meta name="author" content="LelanginAJA Indonesia">
+    
+    
+    
+    
+<!-- Site Name, Title, and Description to be displayed -->
+<meta property="og:site_name" content="Lelangin AJA">
+<meta property="og:title" content="Lelangin AJA Indonesia">
 
-    <meta name="description" content="" />
 
+<!-- Image to display -->
+<!-- Replace   «example.com/image01.jpg» with your own -->
+<meta property="og:image" content="https://lelanginajacoba.masuk.web.id/assets/img/icons/sneat.jpg">
+
+<!-- No need to change anything here -->
+<meta property="og:type" content="website" />
+<meta property="og:image:type" content="image/jpeg">
+
+<!-- Size of image. Any size up to 300. Anything above 300px will not work in WhatsApp -->
+<meta property="og:image:width" content="300">
+<meta property="og:image:height" content="300">
+    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ url('assets/img/favicon/favicon.ico') }}" />
 
@@ -153,7 +174,14 @@
                                     <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
                                         data-bs-toggle="dropdown">
                                         <div class="avatar avatar-online">
-                                            <img src="{{ Auth::user()->thumb }}" alt
+                                            <img src="
+                                            @if (strpos(Auth::user()->thumb, "https://")!==false)
+                                            {{ Auth::user()->thumb }}
+                                            @else
+
+                                            {{ url('avatar/'.Auth::user()->thumb) }}
+                                            @endif
+                                            " style="width:40px !important;height:40px !important" alt
                                                 class="w-px-40 h-auto rounded-circle" />
                                         </div>
                                     </a>
@@ -163,7 +191,13 @@
                                                 <div class="d-flex">
                                                     <div class="flex-shrink-0 me-3">
                                                         <div class="avatar avatar-online">
-                                                            <img src="{{ Auth::user()->thumb }}" alt
+                                                            <img src="
+                                                            @if (strpos(Auth::user()->thumb, "https://")!==false)
+                                                            {{ Auth::user()->thumb }}
+                                                            @else
+
+                                                            {{ url('avatar/'.Auth::user()->thumb) }}
+                                                            @endif" style="width:40px !important;height:40px !important" alt
                                                                 class="w-px-40 h-auto rounded-circle" />
                                                         </div>
                                                     </div>

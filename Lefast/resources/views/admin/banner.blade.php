@@ -1,53 +1,67 @@
 @extends('layouts.base-admin')
 
 @section('menu')
-<li class="menu-item ">
-    <a href="/admin" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-home-circle"></i>
-        <div data-i18n="Analytics">Dashboard</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.product.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-box"></i>
-        <div data-i18n="Analytics">Product</div>
-    </a>
-</li>
-<li class="menu-item active">
-    <a href="{{ route('admin.banner.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bxs-image"></i>
-        <div data-i18n="Analytics">Banner</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="/admin" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-home-circle"></i>
+            <div data-i18n="Analytics">Dashboard</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.product.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-box"></i>
+            <div data-i18n="Analytics">Product</div>
+        </a>
+    </li>
+    <li class="menu-item active">
+        <a href="{{ route('admin.banner.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bxs-image"></i>
+            <div data-i18n="Analytics">Banner</div>
+        </a>
+    </li>
 
-<li class="menu-item ">
-    <a href="{{ route('admin.event.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
-        <div data-i18n="Analytics">Events</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.auction.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-flag"></i>
-        <div data-i18n="Analytics">Auction</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.event.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Events</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.category.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Category</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.auction.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-flag"></i>
+            <div data-i18n="Analytics">Auction</div>
+        </a>
+    </li>
 
 
-<li class="menu-item ">
-    <a href="{{ route('admin.help-center.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-help-circle"></i>
-        <div data-i18n="Analytics">Help Center</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.help-center.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-help-circle"></i>
+            <div data-i18n="Analytics">Help Center</div>
+        </a>
+    </li>
 
-<li class="menu-item ">
-    <a href="{{ route('admin.user.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-user"></i>
-        <div data-i18n="Analytics">User</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.notifications.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-bell"></i>
+            <div data-i18n="Analytics">Notification</div>
+        </a>
+    </li>
+
+    <li class="menu-item ">
+        <a href="{{ route('admin.user.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div data-i18n="Analytics">User</div>
+        </a>
+    </li>
 @endsection
+
 
 @section('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css">
@@ -249,6 +263,7 @@
                 title: 'Do you want to delete this?',
                 showDenyButton: true,
                 showCancelButton: false,
+                reverseButtons:true,
                 denyButtonText: `Don't delete`,
                 confirmButtonText: 'delete',
             }).then((result) => {

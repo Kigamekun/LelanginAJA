@@ -120,6 +120,21 @@
         .events-list .event-date .event-price {
             white-space: nowrap;
         }
+
+
+
+        .item-auction {
+            justify-content: space-between;
+        }
+        @media (max-width: 767px) {
+            .top-auction {
+            display: none;
+
+        }
+        .item-auction {
+            justify-content: center;
+        }
+        }
     </style>
 
 
@@ -174,7 +189,7 @@
                 </div>
                 <br>
                 <br>
-                <div class="d-flex flex-wrap gap-3" style="justify-content: space-between;">
+                <div class="item-auction d-flex flex-wrap gap-3" >
                     @foreach ($data as $item)
                         <div class="card" style="width: 20rem">
                             <img class="card-img-top" style="width: 320px;height:320px;object-fit:contain;"
@@ -213,9 +228,9 @@
                 </div>
             </div>
 
-            <div style="flex:2">
+            <div class="top-auction" style="flex:2;">
 
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between" >
                     <h3>Top Auction</h3>
                 </div>
                 <br>
@@ -266,7 +281,7 @@
                             <td class="event-venue hidden-xs"><i class="icon-map-marker"></i>{{ $item->location }}</td>
                             <td class="event-price hidden-xs">
                                 {{ $item->price == 0 ? 'FREE' : 'Rp.' . number_format($item->price, 0, ',', '.') }}</td>
-                            <td><a href="#" class="btn btn-grey btn-sm event-more">Read More</a></td>
+                            <td></td>
                         </tr>
                     @endforeach
                 </table>

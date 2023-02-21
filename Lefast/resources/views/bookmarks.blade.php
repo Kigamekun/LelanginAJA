@@ -160,7 +160,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title text">{{ $item->product->name }}</h5>
                                     <p class="card-text text">
-                                        {{ $item->product->description }}
+                                        {!! strip_tags($item->product->description) !!}
                                     </p>
                                     <div class="d-flex justify-content-between">
                                         <a href="{{ route('detail', ['id' => $item->id]) }}"

@@ -116,8 +116,8 @@
 
                         <div class="list-group">
                             @foreach ($data as $item)
-                                <a href="javascript:void(0);"
-                                    class="list-group-item list-group-item-action flex-column align-items-start">
+                                <a
+                                    class="list-group-item list-group-item-action flex-column align-items-start notif" data-id="{{ $item->id }}">
                                     <div class="d-flex justify-content-between w-100">
                                         <h6>{{ $item->title }}</h6>
                                         <small class="text-muted">{{ time_elapsed_string($item->created_at) }}</small>
@@ -136,4 +136,29 @@
             </div>
         </div>
     </div>
+@endsection
+
+
+@section('scripts')
+    <script>
+        $(document).on("click", ".notif", function(e) {
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('profile.mark-as-read') }}",
+                method: "POST",
+                data: {
+                    id: $(this).data('id'),
+                },
+                success: function(data) {
+                    console.log('readed');
+                }
+            });
+
+        });
+    </script>
 @endsection

@@ -27,6 +27,12 @@
         </a>
     </li>
     <li class="menu-item ">
+        <a href="{{ route('admin.category.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Category</div>
+        </a>
+    </li>
+    <li class="menu-item ">
         <a href="{{ route('admin.auction.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-flag"></i>
             <div data-i18n="Analytics">Auction</div>
@@ -42,12 +48,20 @@
     </li>
 
     <li class="menu-item ">
+        <a href="{{ route('admin.notifications.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-bell"></i>
+            <div data-i18n="Analytics">Notification</div>
+        </a>
+    </li>
+
+    <li class="menu-item ">
         <a href="{{ route('admin.user.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-user"></i>
             <div data-i18n="Analytics">User</div>
         </a>
     </li>
 @endsection
+
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">

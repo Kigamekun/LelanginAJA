@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{CoreController,AdminController,ProductController,AuctionController,BannerController,EventController,HelpCenterController,ApiController,UserController};
+use App\Http\Controllers\{CoreController,CategoryController,AdminController,ProductController,AuctionController,BannerController,EventController,HelpCenterController,ApiController,UserController,NotificationController};
 use App\Models\{Product,Banner,Event};
 
 /*
@@ -16,6 +16,25 @@ use App\Models\{Product,Banner,Event};
 |
 */
 
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/blacklist', function () {
+    return view('blacklist');
+})->name('blacklist');
+
+
+
+Route::get('/pay-api/{id}', [ApiController::class, 'pay'])->name('pay-api');
+Route::get('/pay-api-finish', [ApiController::class, 'payFinish'])->name('pay-api-finish');
+
+require __DIR__.'/auth.php';
+
+
+Route::middleware(['checkBlacklist'])->group(function () {
+
 Route::get('/', function () {
     $data = Product::limit(6)->orderBy('id','DESC')->get();
     if (isset($_GET['order']) && $_GET['order'] == 2) {
@@ -27,14 +46,6 @@ Route::get('/', function () {
     $event = Event::limit(10)->get();
     return view('landing-page', ['data'=>$data,'banner'=>$banner,'event'=>$event]);
 });
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
-require __DIR__.'/auth.php';
-
 Route::get('/chat', [CoreController::class, 'chat'])->name('chat');
 Route::get('/auction-list', [CoreController::class, 'auctionList'])->name('auction-list');
 Route::get('/help-center', [CoreController::class, 'helpCenter'])->name('help-center');
@@ -44,6 +55,7 @@ Route::get('/detail/{id}', [CoreController::class, 'detail'])->name('detail');
 Route::post('/cst', [CoreController::class,'cst'])->name('cst');
 
 Route::middleware(['auth'])->group(function () {
+    Route::post('/mark-as-read', [ProfileController::class, 'MarkAsRead'])->name('profile.mark-as-read');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -53,18 +65,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [CoreController::class, 'notifications'])->name('notifications');
     Route::get('/history', [CoreController::class, 'history'])->name('history');
     Route::post('/set-bid/{product_id}', [CoreController::class, 'setBid'])->name('set-bid');
-    Route::post('/cancel-bid/{product_id}', [CoreController::class, 'cancelBid'])->name('cancel-bid');
+    Route::post('/cancel-bid/{id}', [CoreController::class, 'cancelBid'])->name('cancel-bid');
     Route::get('/get-snap-token/{id}', [CoreController::class,'getSnapToken'])->name('get-snap-token');
 });
 
 
 
-Route::get('/pay-api/{id}', [ApiController::class, 'pay'])->name('pay-api');
-Route::get('/pay-api-finish', [ApiController::class, 'payFinish'])->name('pay-api-finish');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth','checkRole:2,3'])->group(function () {
     Route::get('/', [AdminController::class,'index'])->name('index');
-
+    Route::get('/chat', [AdminController::class, 'chat'])->name('chat');
+    Route::get('/chat/{id}', [AdminController::class, 'chatDetail'])->name('chat-detail');
 
     Route::prefix('product')->group(function () {
         Route::get('/', [ProductController::class,'index'])->name('product.index');
@@ -93,6 +104,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','checkRole:2,3'])->gr
         Route::post('/update/{id}', [EventController::class,'update'])->name('event.update');
         Route::get('/delete/{id}', [EventController::class,'destroy'])->name('event.delete');
     });
+    Route::prefix('category')->group(function () {
+        Route::get('/', [CategoryController::class,'index'])->name('category.index');
+        Route::get('/create', [CategoryController::class,'create'])->name('category.create');
+        Route::post('/store', [CategoryController::class,'store'])->name('category.store');
+        Route::get('/edit/{id}', [CategoryController::class,'edit'])->name('category.edit');
+        Route::post('/update/{id}', [CategoryController::class,'update'])->name('category.update');
+        Route::get('/delete/{id}', [CategoryController::class,'destroy'])->name('category.delete');
+    });
 
     Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class,'index'])->name('user.index');
@@ -106,6 +125,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','checkRole:2,3'])->gr
     Route::prefix('auction')->group(function () {
         Route::get('/', [AuctionController::class,'index'])->name('auction.index');
         Route::get('/create', [AuctionController::class,'create'])->name('auction.create');
+        Route::get('/invoice/{id}', [AuctionController::class,'invoice'])->name('auction.invoice');
         Route::post('/store', [AuctionController::class,'store'])->name('auction.store');
         Route::get('/edit/{id}', [AuctionController::class,'edit'])->name('auction.edit');
         Route::post('/ship/{id}', [AuctionController::class,'ship'])->name('auction.ship');
@@ -120,4 +140,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','checkRole:2,3'])->gr
         Route::post('/update/{id}', [HelpCenterController::class,'update'])->name('help-center.update');
         Route::get('/delete/{id}', [HelpCenterController::class,'destroy'])->name('help-center.delete');
     });
+
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class,'index'])->name('notifications.index');
+        Route::get('/create', [NotificationController::class,'create'])->name('notifications.create');
+        Route::post('/store', [NotificationController::class,'store'])->name('notifications.store');
+        Route::get('/edit/{id}', [NotificationController::class,'edit'])->name('notifications.edit');
+        Route::post('/update/{id}', [NotificationController::class,'update'])->name('notifications.update');
+        Route::get('/delete/{id}', [NotificationController::class,'destroy'])->name('notifications.delete');
+    });
+});
+
 });

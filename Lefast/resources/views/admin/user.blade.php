@@ -2,53 +2,67 @@
 
 
 @section('menu')
-<li class="menu-item ">
-    <a href="/admin" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-home-circle"></i>
-        <div data-i18n="Analytics">Dashboard</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.product.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-box"></i>
-        <div data-i18n="Analytics">Product</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.banner.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bxs-image"></i>
-        <div data-i18n="Analytics">Banner</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="/admin" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-home-circle"></i>
+            <div data-i18n="Analytics">Dashboard</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.product.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-box"></i>
+            <div data-i18n="Analytics">Product</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.banner.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bxs-image"></i>
+            <div data-i18n="Analytics">Banner</div>
+        </a>
+    </li>
 
-<li class="menu-item ">
-    <a href="{{ route('admin.event.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
-        <div data-i18n="Analytics">Events</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.auction.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-flag"></i>
-        <div data-i18n="Analytics">Auction</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.event.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Events</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.category.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Category</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.auction.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-flag"></i>
+            <div data-i18n="Analytics">Auction</div>
+        </a>
+    </li>
 
 
-<li class="menu-item ">
-    <a href="{{ route('admin.help-center.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-help-circle"></i>
-        <div data-i18n="Analytics">Help Center</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.help-center.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-help-circle"></i>
+            <div data-i18n="Analytics">Help Center</div>
+        </a>
+    </li>
 
-<li class="menu-item active">
-    <a href="{{ route('admin.user.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-user"></i>
-        <div data-i18n="Analytics">User</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.notifications.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-bell"></i>
+            <div data-i18n="Analytics">Notification</div>
+        </a>
+    </li>
+
+    <li class="menu-item active">
+        <a href="{{ route('admin.user.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div data-i18n="Analytics">User</div>
+        </a>
+    </li>
 @endsection
+
 
 @section('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css">
@@ -85,7 +99,7 @@
                 <div class="tabss table-responsive ">
                     <br>
 
-                    <table id="productTable" class="table" style="width:100%">
+                    <table id="userTable" class="table" style="width:100%">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -106,7 +120,13 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td style="width: 10%;">
-                                        <img style="width: 64px;height:64px;" src="{{ $item->thumb }}" alt="">
+                                        <img style="width: 64px;height:64px;" src="
+                                        @if (strpos($item->thumb, "https://")!==false)
+                                        {{ $item->thumb }}
+                                        @else
+
+                                        {{ url('avatar/'.$item->thumb) }}
+                                        @endif" alt="">
                                     </td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->email }}</td>
@@ -128,10 +148,21 @@
                                     <td style="width: 20%">
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#updateData" data-id="{{ $item->id }}"
-                                            data-title="{{ $item->title }}" data-name="{{ $item->name }}"
+                                            data-email="{{ $item->email }}" data-name="{{ $item->name }}"
                                             data-phone="{{ $item->phone }}" data-state="{{ $item->state }}"
                                             data-zipcode="{{ $item->zipcode }}" data-country="{{ $item->country }}"
                                             data-role="{{ $item->role }}"
+                                            data-address="{{ $item->address }}"
+
+                                            @if ($item->role == 3)
+                                            data-role_desc="Admin"
+                                            @elseif($item->role == 2)
+                                            data-role_desc="Pengelola"
+                                            @else
+                                            data-role_desc="User"
+
+                                            @endif
+
                                             data-url="{{ route('admin.user.update', ['id' => $item->id]) }}">
                                             Update
                                         </button>
@@ -176,44 +207,102 @@
                     <h5 class="modal-title" id="staticBackdropLabel">Create User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('admin.product.store') }}" method="post" enctype="multipart/form-data">
+                <form action="{{ route('admin.user.store') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name"
-                                placeholder="Enter Name User" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea name="description" id="description" cols="30" rows="10" class="form-control editor"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="start_from" class="form-label">Start From</label>
-                            <input type="number" class="form-control" id="start_from" name="start_from"
-                                placeholder="Masukan jumlah stok tanaman" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="end_auction" class="form-label">End Auction</label>
-                            <input type="datetime-local" class="form-control" id="end_auction" name="end_auction"
-                                placeholder="Masukan jumlah stok tanaman" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="condition" class="form-label">Condtion</label>
-                            <textarea name="condition" id="condition" cols="30" rows="10" class="form-control editor"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="saleroom" class="form-label">Saleroom Notice</label>
-                            <textarea name="saleroom" id="saleroom" cols="30" rows="10" class="form-control editor"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="catalogue" class="form-label">Catalogue Note</label>
-                            <textarea name="catalogue" id="catalogue" cols="30" rows="10" class="form-control editor"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="thumb" class="form-label">thumb User</label>
-                            <input type="file" class="form-control dropify" id="thumb" name="thumb"
-                                placeholder="isi thumb">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                    placeholder="Enter Name User" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="email" name="email"
+                                    placeholder="Enter Email User" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="Enter Password User" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="phone" name="phone"
+                                    placeholder="Enter Phone User" required>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state"
+                                    placeholder="Enter State User" required>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label for="zipcode" class="form-label">Zipcode</label>
+                                <input type="text" class="form-control" id="zipcode" name="zipcode"
+                                    placeholder="Enter ZipCode User" required>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label" for="country">Country</label>
+                                <select id="country" name="country" class="select2 form-select">
+
+
+                                    <option value="">Select</option>
+
+
+                                    <option value="Australia">Australia</option>
+                                    <option value="Bangladesh">Bangladesh</option>
+                                    <option value="Belarus">Belarus</option>
+                                    <option value="Brazil">Brazil</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="China">China</option>
+                                    <option value="France">France</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="India">India</option>
+                                    <option value="Indonesia">Indonesia</option>
+                                    <option value="Israel">Israel</option>
+                                    <option value="Italy">Italy</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="Korea">Korea, Republic of</option>
+                                    <option value="Mexico">Mexico</option>
+                                    <option value="Philippines">Philippines</option>
+                                    <option value="Russia">Russian Federation</option>
+                                    <option value="South Africa">South Africa</option>
+                                    <option value="Thailand">Thailand</option>
+                                    <option value="Turkey">Turkey</option>
+                                    <option value="Ukraine">Ukraine</option>
+                                    <option value="United Arab Emirates">United Arab Emirates</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="United States">United States</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label" for="role">Role</label>
+                                <select id="role" name="role" class="select2 form-select">
+
+
+                                    <option value="">Select</option>
+
+
+                                    <option value="1">User</option>
+                                    <option value="2">Petugas</option>
+                                    <option value="3">Admin</option>
+
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea name="address" id="address" cols="30" rows="10" class="form-control "></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="thumb" class="form-label">thumb User</label>
+                                <input type="file" class="form-control dropify" id="thumb" name="thumb"
+                                    placeholder="isi thumb">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -241,9 +330,121 @@
 
     <script>
         $(document).ready(function() {
-            $('#productTable').DataTable({});
+            $('#userTable').DataTable({});
         });
     </script>
+
+<script>
+    $('#updateData').on('shown.bs.modal', function(e) {
+        var html = `
+        <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Update User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="${$(e.relatedTarget).data('url')}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                      <div class="row">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" value="${$(e.relatedTarget).data('name')}" id="name" name="name"
+                                    placeholder="Enter Name User" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="email" value="${$(e.relatedTarget).data('email')}" name="email"
+                                    placeholder="Enter Email User" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" value="${$(e.relatedTarget).data('phone')}" id="phone" name="phone"
+                                    placeholder="Enter Phone User" required>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" value="${$(e.relatedTarget).data('state')}" name="state"
+                                    placeholder="Enter State User" required>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label for="zipcode" class="form-label">Zipcode</label>
+                                <input type="text" class="form-control" id="zipcode" value="${$(e.relatedTarget).data('zipcode')}" name="zipcode"
+                                    placeholder="Enter ZipCode User" required>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label" for="country">Country</label>
+                                <select id="country" name="country" class="select2 form-select">
+
+
+                                    <option value="${$(e.relatedTarget).data('country')}">${$(e.relatedTarget).data('country')}</option>
+
+
+                                    <option value="Australia">Australia</option>
+                                    <option value="Bangladesh">Bangladesh</option>
+                                    <option value="Belarus">Belarus</option>
+                                    <option value="Brazil">Brazil</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="China">China</option>
+                                    <option value="France">France</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="India">India</option>
+                                    <option value="Indonesia">Indonesia</option>
+                                    <option value="Israel">Israel</option>
+                                    <option value="Italy">Italy</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="Korea">Korea, Republic of</option>
+                                    <option value="Mexico">Mexico</option>
+                                    <option value="Philippines">Philippines</option>
+                                    <option value="Russia">Russian Federation</option>
+                                    <option value="South Africa">South Africa</option>
+                                    <option value="Thailand">Thailand</option>
+                                    <option value="Turkey">Turkey</option>
+                                    <option value="Ukraine">Ukraine</option>
+                                    <option value="United Arab Emirates">United Arab Emirates</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="United States">United States</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label" for="role">Role</label>
+                                <select id="role" name="role" class="select2 form-select">
+
+
+                                    <option value="${$(e.relatedTarget).data('role')}">${$(e.relatedTarget).data('role_desc')}</option>
+
+
+                                    <option value="1">User</option>
+                                    <option value="2">Petugas</option>
+                                    <option value="3">Admin</option>
+
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea name="address" id="address" cols="30" rows="10" class="form-control ">${$(e.relatedTarget).data('address')}</textarea>
+                            </div>
+
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        `;
+
+        $('#modal-content').html(html);
+
+        tinymce.remove('textarea');
+        tinymce.init(editor_config);
+        $('.dropify').dropify();
+
+    });
+</script>
     <script>
         $('.btn-delete').on('click', function(e) {
             e.preventDefault();
@@ -251,6 +452,7 @@
                 title: 'Do you want to delete this?',
                 showDenyButton: true,
                 showCancelButton: false,
+                reverseButtons:true,
                 denyButtonText: `Don't delete`,
                 confirmButtonText: 'delete',
             }).then((result) => {

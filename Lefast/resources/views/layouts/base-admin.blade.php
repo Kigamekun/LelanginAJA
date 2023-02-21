@@ -153,7 +153,13 @@
                                     <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
                                         data-bs-toggle="dropdown">
                                         <div class="avatar avatar-online">
-                                            <img src="{{ Auth::user()->thumb }}" alt
+                                            <img src="
+                                            @if (strpos(Auth::user()->thumb, "https://")!==false)
+                                            {{ Auth::user()->thumb }}
+                                            @else
+
+                                            {{ url('avatar/'.Auth::user()->thumb) }}
+                                            @endif" style="width:40px !important;height:40px !important" alt
                                                 class="w-px-40 h-auto rounded-circle" />
                                         </div>
                                     </a>
@@ -163,7 +169,13 @@
                                                 <div class="d-flex">
                                                     <div class="flex-shrink-0 me-3">
                                                         <div class="avatar avatar-online">
-                                                            <img src="{{ Auth::user()->thumb }}" alt
+                                                            <img src="
+                                                            @if (strpos(Auth::user()->thumb, "https://")!==false)
+                                                            {{ Auth::user()->thumb }}
+                                                            @else
+
+                                                            {{ url('avatar/'.Auth::user()->thumb) }}
+                                                            @endif" style="width:40px !important;height:40px !important" alt
                                                                 class="w-px-40 h-auto rounded-circle" />
                                                         </div>
                                                     </div>

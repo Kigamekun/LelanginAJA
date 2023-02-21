@@ -79,17 +79,28 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $item->product->name }}</h5>
                             <p class="card-text text">
-                                {{ $item->product->description }}
+                                {!! strip_tags($item->product->description) !!}
                             </p>
                             <br>
                             <br>
                             <br>
                             <br>
+
+
+                            @if (!is_null($item->last_payment))
+                                <div class="d-flex gap-3" style="justify-content: space-between">
+                                    <div>
+                                        <p>Finish payment before</p>
+                                        <p class="badge bg-label-primary me-1">{{ $item->last_payment }}</p>
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="d-flex gap-3" style="justify-content: flex-end">
                                 <a href="{{ route('detail', ['id' => $item->product->id]) }}" class="btn btn-info">Auction
                                     Info</a>
-                                @if ($item->payment_status != 2)
-                                    <form action="{{ route('cancel-bid', ['product_id' => 1]) }}" method="post">
+                                @if (Carbon\Carbon::now() < $item->product->end_auction)
+                                    <form action="{{ route('cancel-bid', ['id' => $item->id]) }}" method="post">
                                         @csrf
                                         <button id="btn-cancel" type="submit" class="btn btn-danger">Cancel Bid</button>
                                     </form>
@@ -137,7 +148,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+
                 </div>
             </div>
         </div>

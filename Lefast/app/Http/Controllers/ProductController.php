@@ -63,29 +63,57 @@ class ProductController extends Controller
             $file = $request->file('thumb');
             $thumbname = time() . '-' . $file->getClientOriginalName();
             $file->move(public_path() . '/thumb' . '/', $thumbname);
-            Product::where('id', $id)->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                'start_from' =>$request->start_from,
-                'end_auction' => $request->end_auction,
-                'condition' => $request->condition,
-                'saleroom_notice' => $request->saleroom,
+            if (is_null($request->end_auction)) {
+                Product::where('id', $id)->update([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'start_from' =>$request->start_from,
 
-                'catalogue_note' => $request->catalogue,
-                'thumb' => $thumbname
-            ]);
+                    'condition' => $request->condition,
+                    'saleroom_notice' => $request->saleroom,
+
+                    'catalogue_note' => $request->catalogue,
+                    'thumb' => $thumbname
+                ]);
+            } else {
+                Product::where('id', $id)->update([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'start_from' =>$request->start_from,
+                    'end_auction' => $request->end_auction,
+                    'condition' => $request->condition,
+                    'saleroom_notice' => $request->saleroom,
+
+                    'catalogue_note' => $request->catalogue,
+                    'thumb' => $thumbname
+                ]);
+            }
         } else {
-            Product::where('id', $id)->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                'start_from' =>$request->start_from,
-                'end_auction' => $request->end_auction,
-                'condition' => $request->condition,
-                'saleroom_notice' => $request->saleroom,
+            if (is_null($request->end_auction)) {
+                Product::where('id', $id)->update([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'start_from' =>$request->start_from,
 
-                'catalogue_note' => $request->catalogue,
+                    'condition' => $request->condition,
+                    'saleroom_notice' => $request->saleroom,
 
-            ]);
+                    'catalogue_note' => $request->catalogue,
+
+                ]);
+            } else {
+                Product::where('id', $id)->update([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'start_from' =>$request->start_from,
+                    'end_auction' => $request->end_auction,
+                    'condition' => $request->condition,
+                    'saleroom_notice' => $request->saleroom,
+
+                    'catalogue_note' => $request->catalogue,
+
+                ]);
+            }
         }
 
 
@@ -107,9 +135,12 @@ class ProductController extends Controller
 
     public function stop($id)
     {
-        $date = date('Y-m-d h:i:s', strtotime("-1 days"));
+        $date = date('Y-m-d h:i:s');
 
         Product::where('id', $id)->update(['end_auction'=>$date]);
+        Auction::where('product_id',$id)->whereRaw('auction_price = (select max(`auction_price`) from auctions)')->update([
+                'last_payment'=> date('Y-m-d H:i:s', strtotime($date. ' + '.env('PAYMENT_LIMIT'))),
+            ]);
         return redirect()->route('admin.product.index')->with(['message'=>'Product berhasil di stop','status'=>'success']);
     }
 }

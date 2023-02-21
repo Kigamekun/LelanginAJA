@@ -49,6 +49,22 @@
 @endsection
 
 @section('content')
+    <style>
+        .access:hover {
+            border: 1px solid #696cff;
+            color: #696cff;
+            cursor: pointer;
+        }
+
+        .access {
+            border: 1px solid gray;
+        }
+
+        a {
+            color:#697a8d;
+        }
+    </style>
+
     <div class="container d-flex mt-5 gap-5">
         <div class="card" style="flex:5">
 
@@ -62,21 +78,21 @@
                     <p>Ada yang bisa kami bantu ?</p>
                 </center>
                 <div class="d-flex justify-content-center gap-3">
-                    <div class="card"
-                        style="width:100px;border:1px solid gray;padding:10px;display:flex;justify-content:center;align-items:center;gap:10px;">
+                    <a target="_blank" href="https://api.whatsapp.com/send/?phone=62895331493506&text=Hello+LelanginAJA+saya+butuh+bantuan+!!!&type=phone_number&app_absent=0" class="card access"
+                        style="width:100px;padding:10px;display:flex;justify-content:center;align-items:center;gap:10px;">
                         <i class='bx bx-phone-call bx-lg'></i>
                         <h5>Telphone</h5>
-                    </div>
-                    <div class="card"
-                        style="width:100px;border:1px solid gray;padding:10px;display:flex;justify-content:center;align-items:center;gap:10px;">
+                    </a>
+                    <a target="_blank" href="mailto:{{ env('MAIL_USERNAME') }}" class="card access"
+                        style="width:100px;padding:10px;display:flex;justify-content:center;align-items:center;gap:10px;">
                         <i class='bx bx-mail-send bx-lg'></i>
                         <h5>E- Mail</h5>
-                    </div>
-                    <div class="card"
-                        style="width:100px;border:1px solid gray;padding:10px;display:flex;justify-content:center;align-items:center;gap:10px;">
+                    </a>
+                    <a href="{{ route('chat') }}" class="card access"
+                        style="width:100px;padding:10px;display:flex;justify-content:center;align-items:center;gap:10px;">
                         <i class='bx bx-conversation bx-lg'></i>
                         <h5>Chat</h5>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>

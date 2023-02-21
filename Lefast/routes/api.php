@@ -33,7 +33,7 @@ Route::get('/banner', [ApiController::class, 'banner'])->name('api.banner');
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/product', [ApiController::class, 'product'])->name('api.product');
     Route::get('/history', [ApiController::class, 'history'])->name('api.history');
-    Route::post('/bid/{id}', [ApiController::class, 'bid'])->name('api.bid');
+    Route::post('/bid/{id}', [ApiController::class, 'bid'])->middleware('checkBlacklistApi')->name('api.bid');
     Route::get('/bidder', [ApiController::class, 'bidder'])->name('api.bidder');
     Route::post('/edit', [ApiController::class, 'edit'])->name('api.edit');
     Route::post('/cancel-bid', [ApiController::class, 'cancelBid'])->name('api.cancel-bid');

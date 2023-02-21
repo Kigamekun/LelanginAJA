@@ -10,53 +10,67 @@
 
 
 @section('menu')
-<li class="menu-item ">
-    <a href="/admin" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-home-circle"></i>
-        <div data-i18n="Analytics">Dashboard</div>
-    </a>
-</li>
-<li class="menu-item active">
-    <a href="{{ route('admin.product.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-box"></i>
-        <div data-i18n="Analytics">Product</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.banner.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bxs-image"></i>
-        <div data-i18n="Analytics">Banner</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="/admin" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-home-circle"></i>
+            <div data-i18n="Analytics">Dashboard</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.product.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-box"></i>
+            <div data-i18n="Analytics">Product</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.banner.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bxs-image"></i>
+            <div data-i18n="Analytics">Banner</div>
+        </a>
+    </li>
 
-<li class="menu-item ">
-    <a href="{{ route('admin.event.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
-        <div data-i18n="Analytics">Events</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.auction.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-flag"></i>
-        <div data-i18n="Analytics">Auction</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.event.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Events</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.category.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Category</div>
+        </a>
+    </li>
+    <li class="menu-item active">
+        <a href="{{ route('admin.auction.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-flag"></i>
+            <div data-i18n="Analytics">Auction</div>
+        </a>
+    </li>
 
 
-<li class="menu-item ">
-    <a href="{{ route('admin.help-center.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-help-circle"></i>
-        <div data-i18n="Analytics">Help Center</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.help-center.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-help-circle"></i>
+            <div data-i18n="Analytics">Help Center</div>
+        </a>
+    </li>
 
-<li class="menu-item ">
-    <a href="{{ route('admin.user.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-user"></i>
-        <div data-i18n="Analytics">User</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.notifications.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-bell"></i>
+            <div data-i18n="Analytics">Notification</div>
+        </a>
+    </li>
+
+    <li class="menu-item ">
+        <a href="{{ route('admin.user.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div data-i18n="Analytics">User</div>
+        </a>
+    </li>
 @endsection
+
 
 @section('content')
     <style>
@@ -132,9 +146,13 @@
                                             data-bs-target="#staticBackdrop" data-id="{{ $item->id }}"
                                             data-no_resi="{{ $item->no_resi }}" data-airplane="{{ $item->airplane }}"
                                             data-courier="{{ $item->courier }}"
+                                            data-file_resi="{{ url('fileResi/' . $item->file_resi) }}"
                                             data-url="{{ route('admin.auction.ship', ['id' => $item->id]) }}">
                                             Shipping
                                         </button>
+                                        <a type="button" class="btn btn-warning m-3 " href="{{ route('admin.auction.invoice', ['id' => $item->id]) }}">
+                                        Invoice
+                                    </a>
                                         @endif
                                         <a class="btn btn-danger"
                                             href="{{ route('admin.auction.delete', ['id' => $item->id]) }}">Delete</a>
@@ -157,10 +175,7 @@
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog" id="updateDialog">
-            <div id="modal-content" class="m"
-            "
-            "
-            "odal-content">
+            <div id="modal-content" class="modal-content">
                 <div class="modal-body">
                     Loading..
                 </div>
@@ -264,7 +279,7 @@
 
 
 
-                        <input type="file" name="file_resi" id="file" class="dropify" required>
+                        <input type="file" name="file_resi" id="file" class="dropify" data-default-file="${$(e.relatedTarget).data('file_resi')}" required>
 
                     </div>
                     <div class="modal-footer">
@@ -287,6 +302,7 @@
                 title: 'Do you want to delete this?',
                 showDenyButton: true,
                 showCancelButton: false,
+                reverseButtons:true,
                 denyButtonText: `Don't delete`,
                 confirmButtonText: 'delete',
             }).then((result) => {

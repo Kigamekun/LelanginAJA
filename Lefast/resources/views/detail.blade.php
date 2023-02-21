@@ -49,12 +49,35 @@
 @endsection
 
 @section('content')
-    <div class="container d-flex mt-5 gap-5">
+
+<style>
+
+    .top-image-auction {
+        width: 500px;
+    }
+
+    @media (max-width: 767px) {
+            .detail-auction {
+                flex-direction: column;
+            }
+            
+            .top-auction-detail {
+                flex-direction:column;
+                
+            }
+            .top-image-auction {
+                width: 100%;
+                margin-bottom:10px;
+            }
+
+        }
+</style>
+    <div class="detail-auction container d-flex mt-5 gap-5">
         <div class="card" style="flex:5">
 
             <div class="card-body">
-                <div class="d-flex">
-                    <img style="border-radius: 15px;width: 500px;height:400px;" src="{{ url('thumb/' . $data->thumb) }}"
+                <div class="d-flex top-auction-detail">
+                    <img class="top-image-auction" style="border-radius: 15px;height:400px;" src="{{ url('thumb/' . $data->thumb) }}"
                         alt="Card image cap">
                     <div class="ms-5">
                         <h3 style="font-weight: bold">{{ $data->name }}</h3>

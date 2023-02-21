@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Models\User;
+use App\Models\{User,Notification};
 use URL;
 class ProfileController extends Controller
 {
@@ -20,6 +20,12 @@ class ProfileController extends Controller
         return view('profile.profile', [
             'user' => $request->user(),
         ]);
+    }
+
+    public function markAsRead(Request $request)
+    {
+        Notification::find($request->id)->update(['is_read'=>true]);
+        return response()->json(['message'=>'notification has been readed'], 200);
     }
 
     /**
@@ -62,6 +68,7 @@ class ProfileController extends Controller
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current-password'],
+            'accountActivation' => ['required'],
         ]);
 
         $user = $request->user();

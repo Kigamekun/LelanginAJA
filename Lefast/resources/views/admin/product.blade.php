@@ -1,53 +1,67 @@
 @extends('layouts.base-admin')
 
 @section('menu')
-<li class="menu-item ">
-    <a href="/admin" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-home-circle"></i>
-        <div data-i18n="Analytics">Dashboard</div>
-    </a>
-</li>
-<li class="menu-item active">
-    <a href="{{ route('admin.product.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-box"></i>
-        <div data-i18n="Analytics">Product</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.banner.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bxs-image"></i>
-        <div data-i18n="Analytics">Banner</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="/admin" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-home-circle"></i>
+            <div data-i18n="Analytics">Dashboard</div>
+        </a>
+    </li>
+    <li class="menu-item active">
+        <a href="{{ route('admin.product.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-box"></i>
+            <div data-i18n="Analytics">Product</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.banner.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bxs-image"></i>
+            <div data-i18n="Analytics">Banner</div>
+        </a>
+    </li>
 
-<li class="menu-item ">
-    <a href="{{ route('admin.event.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
-        <div data-i18n="Analytics">Events</div>
-    </a>
-</li>
-<li class="menu-item ">
-    <a href="{{ route('admin.auction.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-flag"></i>
-        <div data-i18n="Analytics">Auction</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.event.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Events</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.category.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+            <div data-i18n="Analytics">Category</div>
+        </a>
+    </li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.auction.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-flag"></i>
+            <div data-i18n="Analytics">Auction</div>
+        </a>
+    </li>
 
 
-<li class="menu-item ">
-    <a href="{{ route('admin.help-center.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-help-circle"></i>
-        <div data-i18n="Analytics">Help Center</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.help-center.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-help-circle"></i>
+            <div data-i18n="Analytics">Help Center</div>
+        </a>
+    </li>
 
-<li class="menu-item ">
-    <a href="{{ route('admin.user.index') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-user"></i>
-        <div data-i18n="Analytics">User</div>
-    </a>
-</li>
+    <li class="menu-item ">
+        <a href="{{ route('admin.notifications.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-bell"></i>
+            <div data-i18n="Analytics">Notification</div>
+        </a>
+    </li>
+
+    <li class="menu-item ">
+        <a href="{{ route('admin.user.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div data-i18n="Analytics">User</div>
+        </a>
+    </li>
 @endsection
+
 
 
 @section('styles')
@@ -210,7 +224,7 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" name="name"
-                                placeholder="Enter Name Product" required>
+                                placeholder="Enter name product" required>
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
@@ -219,12 +233,12 @@
                         <div class="mb-3">
                             <label for="start_from" class="form-label">Start From</label>
                             <input type="number" class="form-control" id="start_from" name="start_from"
-                                placeholder="Masukan jumlah stok tanaman" required>
+                                placeholder="Enter start from product auction" required>
                         </div>
                         <div class="mb-3">
                             <label for="end_auction" class="form-label">End Auction</label>
                             <input type="datetime-local" class="form-control" id="end_auction" name="end_auction"
-                                placeholder="Masukan jumlah stok tanaman" required>
+                                placeholder="Enter end auction" required>
                         </div>
                         <div class="mb-3">
                             <label for="condition" class="form-label">Condtion</label>
@@ -337,16 +351,16 @@
                         </div>
                         <div class="mb-3">
                             <label for="start_from" class="form-label">Start From</label>
-                            <input type="number" class="form-control" id="start_from" name="start_from" placeholder="Masukan jumlah stok tanaman"
+                            <input type="number" class="form-control" id="start_from" name="start_from" placeholder="Enter start from value auction"
                             value="${$(e.relatedTarget).data('start_from')}"  required>
                         </div>
                         <div class="mb-3">
-                            <label for="end_auction" class="form-label">End Auction</label>
-                            <input type="datetime-local" value="${$(e.relatedTarget).data('end_auction')}" class="form-control" id="end_auction" name="end_auction" placeholder="Masukan jumlah stok tanaman"
-                                required>
+                            <label for="end_auction" class="form-label">End Auction : Current (${$(e.relatedTarget).data('end_auction')})</label>
+                            <input type="datetime-local"  class="form-control" id="end_auction" name="end_auction" placeholder="enter end auction date"
+                                >
                         </div>
                         <div class="mb-3">
-                            <label for="condition" class="form-label">Condtion</label>
+                            <label for="condition" class="form-label">Condition</label>
                             <textarea name="condition" id="condition" cols="30" rows="10" class="form-control editor">${$(e.relatedTarget).data('condition')}</textarea>
                         </div>
                         <div class="mb-3">
@@ -358,7 +372,7 @@
                             <textarea name="catalogue" id="catalogue" cols="30" rows="10" class="form-control editor">${$(e.relatedTarget).data('catalogue_note')}</textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="thumb" class="form-label">thumb Product</label>
+                            <label for="thumb" class="form-label">Thumb Product</label>
                             <input type="file" class="form-control dropify" id="thumb" name="thumb" data-default-file="${$(e.relatedTarget).data('thumb')}"
                                 placeholder="isi thumb">
                         </div>
@@ -385,6 +399,7 @@
                 title: 'Do you want to delete this?',
                 showDenyButton: true,
                 showCancelButton: false,
+                reverseButtons:true,
                 denyButtonText: `Don't delete`,
                 confirmButtonText: 'delete',
             }).then((result) => {

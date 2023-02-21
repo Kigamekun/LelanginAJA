@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Auction;
+use PDF;
 
 class AuctionController extends Controller
 {
@@ -47,6 +48,13 @@ class AuctionController extends Controller
 
     public function ship(Request $request, $id)
     {
+        $this->validate($request, [
+            'courier' => 'required',
+            'airplane' =>'required',
+            'no_resi' => 'required',
+        ]);
+
+
         $file = $request->file('file_resi');
         $thumbname = time() . '-' . $file->getClientOriginalName();
         $file->move(public_path() . '/fileResi' . '/', $thumbname);
@@ -70,6 +78,12 @@ class AuctionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request, [
+            'title' => 'required',
+            'location' =>'required',
+            'price' => 'required',
+        ]);
+
         Auction::where('id', $id)->update([
             'title' => $request->title,
             'location' => $request->location,
@@ -89,5 +103,11 @@ class AuctionController extends Controller
     {
         Auction::where('id', $id)->delete();
         return redirect()->route('admin.auction.index')->with(['message'=>'Auction berhasil di delete','status'=>'success']);
+    }
+
+    public function invoice(Request $request,$id)
+    {
+        $pdf = PDF::loadview('PDF.index',['data'=>Auction::where('id',$id)->first()]);
+        return $pdf->download('Invoice.pdf');
     }
 }

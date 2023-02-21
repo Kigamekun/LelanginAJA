@@ -254,7 +254,7 @@
 
         .price-wrap #one,
         .price-wrap #two {
-            width: 30px;
+            width: 80px;
             text-align: right;
             margin: 0;
             padding: 0;
@@ -284,9 +284,23 @@
             box-shadow: 0 0 0 0.5px #fff;
             transition-duration: 0.3s;
         }
+
+        .filter-auction {
+            position:sticky;top:20px;height:450px;
+        }
+
+        @media (max-width: 767px) {
+            .wrap-auction {
+                flex-direction: column;
+            }
+            .filter-auction {
+                height:450px;
+                position:unset;
+            }
+        }
     </style>
-    <div class="container d-flex mt-5 gap-5">
-        <div class="card" style="flex:2;position:sticky;top:20px;height:450px;">
+    <div class="container d-flex mt-5 gap-5 wrap-auction">
+        <div class="card filter-auction" style="flex:2;">
             <div class="card-body">
                 <form action="" method="get">
                     <h3>Filter Auction</h3>
@@ -326,13 +340,13 @@
                                 <div class="price-wrap">
 
                                     <div class="price-wrap-1">
+                                        <label for="one">Rp.</label>
                                         <input name="lower" id="one">
-                                        <label for="one">$</label>
                                     </div>
                                     <div class="price-wrap_line">-</div>
                                     <div class="price-wrap-2">
+                                        <label for="two">Rp.</label>
                                         <input name="upper" id="two">
-                                        <label for="two">$</label>
                                     </div>
                                 </div>
                             </fieldset>
@@ -368,26 +382,44 @@
                             <div class="col-md-8">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $item->name }}</h5>
+                                    <p class="badge bg-label-primary me-1">Start From :
+                                        Rp.{{ number_format($item->start_from, 0, ',', '.') }}</p>
                                     <p class="card-text text">
                                         {!! strip_tags($item->description) !!}
                                     </p>
                                     <br>
                                     <br>
                                     <br>
-                                    <div class="d-flex gap-3" style="justify-content: flex-end">
-                                        <div id="button-save-{{ $item->id }}">
-
-                                            @if (is_null($item->bookmarked))
-                                                <button class="btn btn-outline-primary save-button"
-                                                    data-item-id="{{ $item->id }}">Save</button>
-                                            @else
-                                                <button class="btn btn-primary unsave-button"
-                                                    data-item-id="{{ $item->id }}">Saved</button>
-                                            @endif
+                                    <div class="d-flex gap-3" style="justify-content: space-between">
+                                        <div>
+                                            <div data-date="{{ $item->end_auction }}" class="clockdiv btn">
+                                                <span class="days"></span>
+                                                <span class="tag1"></span>
+                                                <span class="hours"></span>
+                                                <span class="tag2"></span>
+                                                <span class="minutes"></span>
+                                                <span class="tag3"></span>
+                                                <span class="seconds"></span>
+                                                <span class="tag4"></span>
+                                            </div>
                                         </div>
-                                        <a href="{{ route('detail', ['id' => $item->id]) }}"
-                                            class="btn btn-primary">Bid</a>
+                                        <div class="d-flex gap-3">
+                                            @if (Auth::check())
+                                                <div id="button-save-{{ $item->id }}">
 
+                                                    @if (is_null($item->bookmarked))
+                                                        <button class="btn btn-outline-primary save-button"
+                                                            data-item-id="{{ $item->id }}">Save</button>
+                                                    @else
+                                                        <button class="btn btn-primary unsave-button"
+                                                            data-item-id="{{ $item->id }}">Saved</button>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                            <a href="{{ route('detail', ['id' => $item->id]) }}"
+                                                class="btn btn-primary">Bid</a>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -443,7 +475,6 @@
     </script>
 
     <script>
-
         $(document).on("click", ".save-button", function(e) {
             console.log($(this).data('item-id'));
             $.ajaxSetup({
@@ -487,6 +518,62 @@
             });
 
         });
+    </script>
+    <script>
+        document.addEventListener('readystatechange', event => {
+            if (event.target.readyState === "complete") {
+                var clockdiv = document.getElementsByClassName("clockdiv");
+                var countDownDate = new Array();
+                for (var i = 0; i < clockdiv.length; i++) {
+                    countDownDate[i] = new Array();
+                    countDownDate[i]['el'] = clockdiv[i];
+                    countDownDate[i]['time'] = new Date(clockdiv[i].getAttribute('data-date')).getTime();
+                    countDownDate[i]['days'] = 0;
+                    countDownDate[i]['hours'] = 0;
+                    countDownDate[i]['seconds'] = 0;
+                    countDownDate[i]['minutes'] = 0;
+                }
 
+                var countdownfunction = setInterval(function() {
+                    for (var i = 0; i < countDownDate.length; i++) {
+                        var now = new Date().getTime();
+                        var distance = countDownDate[i]['time'] - now;
+                        countDownDate[i]['days'] = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        countDownDate[i]['hours'] = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 *
+                            60 * 60));
+                        countDownDate[i]['minutes'] = Math.floor((distance % (1000 * 60 * 60)) / (1000 *
+                            60));
+                        countDownDate[i]['seconds'] = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        if (distance < 0) {
+                            countDownDate[i]['el'].classList.add("btn-danger");
+                            countDownDate[i]['el'].innerHTML = 'EXPIRED';
+
+
+                        } else {
+                            countDownDate[i]['el'].classList.add("btn-info");
+
+                            countDownDate[i]['el'].querySelector('.days').innerHTML = countDownDate[i][
+                                'days'
+                            ];
+                            countDownDate[i]['el'].querySelector('.hours').innerHTML = countDownDate[i][
+                                'hours'
+                            ];
+                            countDownDate[i]['el'].querySelector('.minutes').innerHTML = countDownDate[i][
+                                'minutes'
+                            ];
+                            countDownDate[i]['el'].querySelector('.seconds').innerHTML = countDownDate[i][
+                                'seconds'
+                            ];
+                            countDownDate[i]['el'].querySelector('.tag1').innerHTML = 'd';
+                            countDownDate[i]['el'].querySelector('.tag2').innerHTML = 'h';
+                            countDownDate[i]['el'].querySelector('.tag3').innerHTML = 'm';
+                            countDownDate[i]['el'].querySelector('.tag4').innerHTML = 's';
+                        }
+
+                    }
+                }, 1000);
+            }
+        });
     </script>
 @endsection
