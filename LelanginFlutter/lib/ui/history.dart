@@ -75,6 +75,7 @@ class _HistoriesState extends State<Histories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: ListView(children: [
         Column(children: [
           Container(
@@ -263,22 +264,22 @@ class _HistoriesState extends State<Histories> {
                                                                     ] else if (post
                                                                             .status ==
                                                                         2) ...[
-                                                                      ElevatedButton(
-                                                                        style: ElevatedButton
-                                                                            .styleFrom(
-                                                                          primary: const Color.fromARGB(
-                                                                              255,
-                                                                              236,
-                                                                              7,
-                                                                              64), // background
-                                                                          onPrimary:
-                                                                              Colors.white, // foreground
-                                                                        ),
-                                                                        onPressed:
-                                                                            () {},
-                                                                        child: const Text(
-                                                                            'Cancel Bid'),
-                                                                      ),
+                                                                      // ElevatedButton(
+                                                                      //   style: ElevatedButton
+                                                                      //       .styleFrom(
+                                                                      //     primary: const Color.fromARGB(
+                                                                      //         255,
+                                                                      //         236,
+                                                                      //         7,
+                                                                      //         64), // background
+                                                                      //     onPrimary:
+                                                                      //         Colors.white, // foreground
+                                                                      //   ),
+                                                                      //   onPressed:
+                                                                      //       () {},
+                                                                      //   child: const Text(
+                                                                      //       'Cancel Bid'),
+                                                                      // ),
                                                                       ElevatedButton(
                                                                         style: ElevatedButton
                                                                             .styleFrom(

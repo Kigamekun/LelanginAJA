@@ -46,15 +46,18 @@ Route::get('/', function () {
     $event = Event::limit(10)->get();
     return view('landing-page', ['data'=>$data,'banner'=>$banner,'event'=>$event]);
 });
-Route::get('/chat', [CoreController::class, 'chat'])->name('chat');
+
 Route::get('/auction-list', [CoreController::class, 'auctionList'])->name('auction-list');
-Route::get('/help-center', [CoreController::class, 'helpCenter'])->name('help-center');
+
 Route::get('/search', [CoreController::class, 'search'])->name('search');
 Route::get('/filter', [CoreController::class, 'filter'])->name('filter');
 Route::get('/detail/{id}', [CoreController::class, 'detail'])->name('detail');
 Route::post('/cst', [CoreController::class,'cst'])->name('cst');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/help-center', [CoreController::class, 'helpCenter'])->name('help-center');
+Route::get('/chat', [CoreController::class, 'chat'])->name('chat');
+
     Route::post('/mark-as-read', [ProfileController::class, 'MarkAsRead'])->name('profile.mark-as-read');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

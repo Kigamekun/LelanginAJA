@@ -247,6 +247,42 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+     @if (!is_null(Session::get('message')))
+         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+        <script>
+            Swal.fire({
+                position: 'center',
+                icon: @json(Session::get('status')),
+                title: @json(Session::get('status')),
+                html: @json(Session::get('message')),
+                showConfirmButton: false,
+                timer: 4000
+            })
+        </script>
+    @endif
+
+
+
+
+
+    @if (!empty($errors->all()))
+         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+        <script>
+            var err = @json($errors->all());
+            var txt = '';
+            Object.keys(err).forEach(element => {
+                txt += err[element] + '<br>';
+            });
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Error',
+                html: txt,
+                showConfirmButton: false,
+                timer: 4000
+            })
+        </script>
+    @endif
 </body>
 
 </html>

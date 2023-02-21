@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
-import 'dart:developer' as developer;
 import 'package:lelanginaja/ui/home.dart';
 import 'package:lelanginaja/ui/login.dart';
 // import 'package:lelanginaja/ui/details.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:provider/provider.dart';
+
+import 'auth_provider.dart';
+
 void main() async {
   await dotenv.load(fileName: "lib/.env");
-  runApp(MyApp());
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,20 +23,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      title: 'LelanginAJA',
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
+    return ChangeNotifierProvider(
+      create: (context) => AuthProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        title: 'LelanginAJA',
+        theme: ThemeData(
+          primarySwatch: Colors.amber,
+        ),
+        home: const CheckAuth(),
       ),
-      home: CheckAuth(),
     );
   }
 }
 
 class CheckAuth extends StatefulWidget {
+  const CheckAuth({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _CheckAuthState createState() => _CheckAuthState();
 }
 
@@ -41,6 +53,7 @@ class _CheckAuthState extends State<CheckAuth> {
   void initState() {
     super.initState();
     _checkIfLoggedIn();
+    initialization();
   }
 
   void _checkIfLoggedIn() async {
@@ -55,13 +68,34 @@ class _CheckAuthState extends State<CheckAuth> {
     }
   }
 
+  void initialization() async {
+    // This is where you can initialize the resources needed by your app while
+    // the splash screen is displayed.  Remove the following example because
+    // delaying the user experience is a bad design practice!
+    // ignore_for_file: avoid_print
+    print('ready in 3...');
+    await Future.delayed(const Duration(seconds: 1));
+    print('ready in 2...');
+    await Future.delayed(const Duration(seconds: 1));
+    print('ready in 1...');
+    await Future.delayed(const Duration(seconds: 1));
+    print('go!');
+    FlutterNativeSplash.remove();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget child;
+    // final authProvider = Provider.of<AuthProvider>(context);
+
+    // if (isAuth == true) {
+    //   Provider.of<AuthProvider>(context, listen: false).login();
+    // }
+
     if (isAuth) {
-      child = Home();
+      child = const Home();
     } else {
-      child = Login();
+      child = const Login();
     }
 
     return Scaffold(

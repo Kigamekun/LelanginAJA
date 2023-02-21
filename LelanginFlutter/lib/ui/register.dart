@@ -22,16 +22,16 @@ class _RegisterState extends State<Register> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController passwordconfirmationController =
       TextEditingController();
-  void Register(String name, email, password, passwordconfirmation) async {
+
+  void register(String name, email, password, passwordconfirmation) async {
     try {
-      Response response = await post(
-          Uri.parse(dotenv.env['API_URL'].toString() + "/api/register"),
-          body: {
-            'name': name,
-            'email': email,
-            'password': password,
-            'passwordconfirmation': passwordconfirmation
-          });
+      Response response =
+          await post(Uri.parse("${dotenv.env['API_URL']}/api/register"), body: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'passwordconfirmation': passwordconfirmation
+      });
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body.toString());
@@ -40,35 +40,36 @@ class _RegisterState extends State<Register> {
         SharedPreferences localStorage = await SharedPreferences.getInstance();
         localStorage.setString('token', json.encode(data['access_token']));
         localStorage.setString('user', json.encode(data['data']));
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
-          new MaterialPageRoute(builder: (context) => Home()),
+          MaterialPageRoute(builder: (context) => const Home()),
         );
       } else {
         showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Error"),
-                content: Text('Data yang anda masukkan salah'),
+                title: const Text("Error"),
+                content: const Text('Data yang anda masukkan salah'),
                 actions: [
                   ElevatedButton(
-                    child: const Text('Kembali'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
-                      primary: Color(0xFF696cff), // background
+                      primary: const Color(0xFF696cff), // background
                       onPrimary: Colors.white, // foreground
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
+                    child: const Text('Kembali'),
                   )
                 ],
               );
             });
       }
     } catch (e) {
-      print(e.toString());
+      developer.log(e.toString());
     }
   }
 
@@ -120,15 +121,15 @@ class _RegisterState extends State<Register> {
                                     </g>
                                 </g>
                             </svg>'''),
-                    SizedBox(width: 10),
-                    Text('LelanginAJA',
+                    const SizedBox(width: 10),
+                    const Text('LelanginAJA',
                         style: TextStyle(
                             color: Color(0XFF566a7f),
                             fontWeight: FontWeight.bold,
                             fontSize: 20))
                   ],
                 ),
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: TextField(
@@ -142,7 +143,6 @@ class _RegisterState extends State<Register> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: TextField(
-                    obscureText: true,
                     controller: emailController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -184,15 +184,23 @@ class _RegisterState extends State<Register> {
                     height: 50,
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: ElevatedButton(
-                      child: const Text('Register'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
-                        primary: Color(0xFF696cff), // background
+                        primary: const Color(0xFF696cff), // background
                         onPrimary: Colors.white, // foreground
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        developer.log('cicked');
+                        register(
+                            nameController.text,
+                            emailController.text,
+                            passwordController.text,
+                            passwordconfirmationController.text);
+                      },
+                      child: const Text('Register'),
                     )),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const Text('Have an account?'),
                     TextButton(
@@ -201,15 +209,12 @@ class _RegisterState extends State<Register> {
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new Login()));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Login()));
                         //signup screen
                       },
                     )
                   ],
-                  mainAxisAlignment: MainAxisAlignment.center,
                 ),
               ],
             )),

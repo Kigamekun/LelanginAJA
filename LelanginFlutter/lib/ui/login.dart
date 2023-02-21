@@ -24,7 +24,7 @@ class _LoginState extends State<Login> {
   void login(String email, password) async {
     try {
       Response response = await post(
-          Uri.parse(dotenv.env['API_URL'].toString() + "/api/login"),
+          Uri.parse("${dotenv.env['API_URL']}/api/login"),
           body: {'email': email, 'password': password});
 
       if (response.statusCode == 200) {
@@ -34,28 +34,29 @@ class _LoginState extends State<Login> {
         SharedPreferences localStorage = await SharedPreferences.getInstance();
         localStorage.setString('token', json.encode(data['access_token']));
         localStorage.setString('user', json.encode(data['data']));
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
-          new MaterialPageRoute(builder: (context) => Home()),
+          MaterialPageRoute(builder: (context) => const Home()),
         );
       } else {
         showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Error"),
-                content: Text('Data yang anda masukkan salah'),
+                title: const Text("Error"),
+                content: const Text('Data yang anda masukkan salah'),
                 actions: [
                   ElevatedButton(
-                    child: const Text('Kembali'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
-                      primary: Color(0xFF696cff), // background
+                      primary: const Color(0xFF696cff), // background
                       onPrimary: Colors.white, // foreground
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
+                    child: const Text('Kembali'),
                   )
                 ],
               );
@@ -115,15 +116,15 @@ class _LoginState extends State<Login> {
                                     </g>
                                 </g>
                             </svg>'''),
-                    SizedBox(width: 10),
-                    Text('LelanginAJA',
+                    const SizedBox(width: 10),
+                    const Text('LelanginAJA',
                         style: TextStyle(
                             color: Color(0XFF566a7f),
                             fontWeight: FontWeight.bold,
                             fontSize: 30))
                   ],
                 ),
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: TextField(
@@ -157,17 +158,18 @@ class _LoginState extends State<Login> {
                     height: 50,
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: ElevatedButton(
-                      child: const Text('Login'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
-                        primary: Color(0xFF696cff), // background
+                        primary: const Color(0xFF696cff), // background
                         onPrimary: Colors.white, // foreground
                       ),
                       onPressed: () {
                         login(emailController.text, passwordController.text);
                       },
+                      child: const Text('Login'),
                     )),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const Text('Does not have account?'),
                     TextButton(
@@ -178,12 +180,11 @@ class _LoginState extends State<Login> {
                       onPressed: () {
                         Navigator.push(
                             context,
-                            new MaterialPageRoute(
-                                builder: (context) => new Register()));
+                            MaterialPageRoute(
+                                builder: (context) => const Register()));
                       },
                     )
                   ],
-                  mainAxisAlignment: MainAxisAlignment.center,
                 ),
               ],
             )),

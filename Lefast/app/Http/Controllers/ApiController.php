@@ -37,14 +37,14 @@ class ApiController extends Controller
             return response()->json(['data'=>$data], 200)->header('Content-Type', 'application/json');
         } else {
             if (isset($_GET['q'])) {
-                $data = Product::where('name', 'LIKE', '%'.$_GET['q'].'%')->get();
+                $data = Product::select('id', 'name', 'start_from','end_auction','status','thumb')->where('name', 'LIKE', '%'.$_GET['q'].'%')->get();
                 $solve = [];
                 foreach ($data as $key => $value) {
                     $solve[$key]= $value;
                     $solve[$key]['thumb'] = env('API_URL').'/thumb/'.$value->thumb;
                 }
             } else {
-                $data = Product::all();
+                $data = Product::select('id', 'name', 'start_from','end_auction','status','thumb')->get();
                 $solve = [];
                 foreach ($data as $key => $value) {
                     $solve[$key]= $value;
@@ -177,7 +177,11 @@ class ApiController extends Controller
                 $data[$key]['file_resi'] = 'On Progress';
             }
 
-            $data[$key]['product'] = $value->product;
+            $data[$key]['product']['id'] = $value->product->id;
+            $data[$key]['product']['name'] = $value->product->name;
+            $data[$key]['product']['start_from'] = $value->product->start_from;
+            $data[$key]['product']['end_auction'] = $value->product->end_auction;
+            $data[$key]['product']['status'] = $value->product->status;
             $data[$key]['product']['thumb'] = env('API_URL').'/thumb/'.$data[$key]['product']['thumb'];
         }
         return response()->json(['data'=>$data], 200)->header('Content-Type', 'application/json');

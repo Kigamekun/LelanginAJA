@@ -77,6 +77,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: ListView(
           children: [
             Column(
@@ -149,6 +150,21 @@ class _HomeState extends State<Home> {
                                                       softWrap: false,
                                                     ),
                                                   ),
+                                                  // const SizedBox(height: 10),
+                                                  // SizedBox(
+                                                  //   width: 120.0,
+                                                  //   child: Text(
+                                                  //     'Start From : Rp.' +
+                                                  //         post.start_from
+                                                  //             .toString(),
+                                                  //     maxLines: 2,
+                                                  //     overflow:
+                                                  //         TextOverflow.ellipsis,
+                                                  //     softWrap: false,
+                                                  //     style: TextStyle(
+                                                  //         fontSize: 11),
+                                                  //   ),
+                                                  // ),
                                                   const SizedBox(height: 10),
                                                   CountdownTimer(
                                                     endTime: DateTime.parse(post
@@ -244,7 +260,9 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomBarLelangin(active: 0),
+        bottomNavigationBar: BottomBarLelangin(
+          active: 0,
+        ),
       ),
     );
   }

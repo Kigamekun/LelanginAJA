@@ -10,10 +10,10 @@ Future<List<BannerLelangin>>? fetchBanner() async {
   var token = jsonDecode(localStorage.getString('token').toString());
 
   final response = await http.get(
-    Uri.parse(dotenv.env['API_URL'].toString() + "/api/banner"),
+    Uri.parse("${dotenv.env['API_URL']}/api/banner"),
     headers: {
       "Content-Type": "application/json",
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer $token'
     },
   );
 

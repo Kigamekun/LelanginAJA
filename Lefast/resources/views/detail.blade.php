@@ -55,6 +55,11 @@
     .top-image-auction {
         width: 500px;
     }
+    
+    
+    .desc-all {
+        margin-left:30px;
+    }
 
     @media (max-width: 767px) {
             .detail-auction {
@@ -79,7 +84,7 @@
                 <div class="d-flex top-auction-detail">
                     <img class="top-image-auction" style="border-radius: 15px;height:400px;" src="{{ url('thumb/' . $data->thumb) }}"
                         alt="Card image cap">
-                    <div class="ms-5">
+                    <div class="desc-all">
                         <h3 style="font-weight: bold">{{ $data->name }}</h3>
                         <hr>
                         <br>

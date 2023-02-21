@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\{Product,Auction};
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
@@ -138,7 +138,7 @@ class ProductController extends Controller
         $date = date('Y-m-d h:i:s');
 
         Product::where('id', $id)->update(['end_auction'=>$date]);
-        Auction::where('product_id',$id)->whereRaw('auction_price = (select max(`auction_price`) from auctions)')->update([
+        Auction::whereRaw('auction_price = (select max(`auction_price`) from auctions where product_id = '.$id.')')->update([
                 'last_payment'=> date('Y-m-d H:i:s', strtotime($date. ' + '.env('PAYMENT_LIMIT'))),
             ]);
         return redirect()->route('admin.product.index')->with(['message'=>'Product berhasil di stop','status'=>'success']);

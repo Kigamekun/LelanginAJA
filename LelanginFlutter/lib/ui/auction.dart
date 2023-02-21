@@ -14,7 +14,8 @@ List list = [
 ];
 
 class Auction extends StatefulWidget {
-  Auction({Key? key}) : super(key: key);
+  final String query;
+  Auction({Key? key, required this.query}) : super(key: key);
 
   @override
   State<Auction> createState() => _AuctionState();
@@ -24,6 +25,7 @@ class _AuctionState extends State<Auction> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: ListView(children: [
         Column(children: [
           Container(
@@ -34,7 +36,9 @@ class _AuctionState extends State<Auction> {
               child: Wrap(
                 children: [
                   FutureBuilder<List<Product>>(
-                    future: fetchProduct(),
+                    future: widget.query != ''
+                        ? fetchProduct(query: widget.query)
+                        : fetchProduct(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         List<Product>? history = snapshot.data;

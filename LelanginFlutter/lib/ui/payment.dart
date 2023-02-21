@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lelanginaja/widget/appbarlelangin.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'dart:developer' as developer;
 import 'package:lelanginaja/ui/history.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
 
 class Payment extends StatefulWidget {
   final String id;
@@ -40,11 +36,11 @@ class _PaymentState extends State<Payment> {
         onPageFinished: (String url) {},
         onWebResourceError: (WebResourceError error) {},
         onNavigationRequest: (NavigationRequest request) {
-          if (request.url.startsWith(
-              dotenv.env['API_URL'].toString() + '/pay-api-finish')) {
+          if (request.url
+              .startsWith('${dotenv.env['API_URL']}/pay-api-finish')) {
             Navigator.pushReplacement(
               context,
-              new MaterialPageRoute(builder: (context) => Histories()),
+              MaterialPageRoute(builder: (context) => Histories()),
             );
             return NavigationDecision.prevent;
           }
@@ -52,18 +48,17 @@ class _PaymentState extends State<Payment> {
         },
       ),
     )
-    ..loadRequest(
-        Uri.parse(dotenv.env['API_URL'].toString() + "/pay-api/" + widget.id));
+    ..loadRequest(Uri.parse("${dotenv.env['API_URL']}/pay-api/${widget.id}"));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Payment Auction'),
+          title: const Text('Payment Auction'),
         ),
         resizeToAvoidBottomInset: false,
         body: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: WebViewWidget(controller: webViewController),
         ));
   }

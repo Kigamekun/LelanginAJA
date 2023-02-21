@@ -64,6 +64,19 @@
 
 
 @section('content')
+<style>
+
+#list-chat {
+    height: 500px;
+}
+  @media (max-width: 767px) {
+            #list-chat {
+                height: 300px;
+            }
+
+        }
+        
+</style>
     <div class="container">
         <br>
         <br>
@@ -75,7 +88,7 @@
         <br>
         <br>
         <br>
-        <div id="list-chat" style="height: 500px;overflow-y:scroll;overflow-x:hidden;">
+        <div id="list-chat" style="overflow-y:scroll;overflow-x:hidden;">
 
         </div>
 

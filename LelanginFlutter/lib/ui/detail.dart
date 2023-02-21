@@ -128,12 +128,9 @@ class _DetailsState extends State<Details> {
         body: {'auction_price': price},
         headers: {'Authorization': 'Bearer ' + token},
       );
+      developer.log(response.statusCode.toString());
 
       if (response.statusCode == 200) {
-        // Navigator.pushReplacement(
-        //   context,
-        //   new MaterialPageRoute(builder: (context) => Histories()),
-        // );
         setState(() {});
         priceController.clear();
         showDialog(
@@ -189,6 +186,7 @@ class _DetailsState extends State<Details> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
+      resizeToAvoidBottomInset: false,
       body: ListView(children: [
         Container(
           child: AppBarLelangin(),
@@ -268,153 +266,150 @@ class _DetailsState extends State<Details> {
                                       ],
                                     ),
                                     const SizedBox(height: 50),
-                                    Container(
-                                        height: 200,
-                                        child: SingleChildScrollView(
-                                          child: Wrap(
-                                            children: [
-                                              new FutureBuilder<List<Bidder>>(
-                                                  future:
-                                                      fetchBidder(detail.id),
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.hasData) {
-                                                      List<Bidder>? bidder =
-                                                          snapshot.data;
-                                                      return Wrap(
-                                                          children: bidder!
-                                                              .map((post) =>
-                                                                  new Wrap(
-                                                                      children: <
-                                                                          Widget>[
-                                                                        if (post
-                                                                            .is_win) ...[
-                                                                          SizedBox(
-                                                                            width:
-                                                                                double.infinity,
-                                                                            height:
-                                                                                100,
-                                                                            child:
-                                                                                Card(
-                                                                              color: Color(0xFF696cff),
-                                                                              elevation: 2,
-                                                                              child: Padding(
-                                                                                padding: const EdgeInsets.all(8.0),
-                                                                                child: Row(
-                                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                  children: [
-                                                                                    Column(
-                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                                      children: [
-                                                                                        Row(
-                                                                                          children: [
-                                                                                            Text(
-                                                                                              post.name + " ",
-                                                                                              style: const TextStyle(
-                                                                                                color: Colors.white,
-                                                                                                fontWeight: FontWeight.bold,
+                                    if (detail.is_bid >= 0) ...[
+                                      Container(
+                                          height: 200,
+                                          child: SingleChildScrollView(
+                                            child: Wrap(
+                                              children: [
+                                                new FutureBuilder<List<Bidder>>(
+                                                    future:
+                                                        fetchBidder(detail.id),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot.hasData) {
+                                                        List<Bidder>? bidder =
+                                                            snapshot.data;
+                                                        return Wrap(
+                                                            children: bidder!
+                                                                .map((post) =>
+                                                                    new Wrap(
+                                                                        children: <
+                                                                            Widget>[
+                                                                          if (post
+                                                                              .is_win) ...[
+                                                                            SizedBox(
+                                                                              width: double.infinity,
+                                                                              height: 100,
+                                                                              child: Card(
+                                                                                color: Color(0xFF696cff),
+                                                                                elevation: 2,
+                                                                                child: Padding(
+                                                                                  padding: const EdgeInsets.all(8.0),
+                                                                                  child: Row(
+                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                    children: [
+                                                                                      Column(
+                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                        children: [
+                                                                                          Row(
+                                                                                            children: [
+                                                                                              Text(
+                                                                                                post.name + " ",
+                                                                                                style: const TextStyle(
+                                                                                                  color: Colors.white,
+                                                                                                  fontWeight: FontWeight.bold,
+                                                                                                ),
                                                                                               ),
-                                                                                            ),
-                                                                                            Text(
-                                                                                              post.is_you == true ? '(You)' : '',
-                                                                                              style: const TextStyle(
-                                                                                                color: Colors.white,
-                                                                                                fontWeight: FontWeight.bold,
+                                                                                              Text(
+                                                                                                post.is_you == true ? '(You)' : '',
+                                                                                                style: const TextStyle(
+                                                                                                  color: Colors.white,
+                                                                                                  fontWeight: FontWeight.bold,
+                                                                                                ),
                                                                                               ),
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                        Text(
-                                                                                          post.auction_price.toString(),
-                                                                                          style: const TextStyle(
-                                                                                            color: Colors.white,
-                                                                                            fontWeight: FontWeight.bold,
+                                                                                            ],
                                                                                           ),
-                                                                                        )
-                                                                                      ],
-                                                                                    ),
-                                                                                    Spacer(),
-                                                                                    Image.asset(
-                                                                                      'assets/images/medal.png',
-                                                                                      height: 64,
-                                                                                      width: 64,
-                                                                                    ),
-                                                                                  ],
+                                                                                          Text(
+                                                                                            post.auction_price.toString(),
+                                                                                            style: const TextStyle(
+                                                                                              color: Colors.white,
+                                                                                              fontWeight: FontWeight.bold,
+                                                                                            ),
+                                                                                          )
+                                                                                        ],
+                                                                                      ),
+                                                                                      Spacer(),
+                                                                                      Image.asset(
+                                                                                        'assets/images/medal.png',
+                                                                                        height: 64,
+                                                                                        width: 64,
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
                                                                                 ),
                                                                               ),
                                                                             ),
-                                                                          ),
-                                                                        ] else ...[
-                                                                          SizedBox(
-                                                                            width:
-                                                                                double.infinity,
-                                                                            height:
-                                                                                100,
-                                                                            child:
-                                                                                Card(
-                                                                              elevation: 2,
-                                                                              child: Padding(
-                                                                                padding: const EdgeInsets.all(8.0),
-                                                                                child: Row(
-                                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                  children: [
-                                                                                    Column(
-                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                                      children: [
-                                                                                        Row(
-                                                                                          children: [
-                                                                                            Text(
-                                                                                              post.name + " ",
-                                                                                              style: const TextStyle(
-                                                                                                color: Colors.black,
-                                                                                                fontWeight: FontWeight.bold,
+                                                                          ] else ...[
+                                                                            SizedBox(
+                                                                              width: double.infinity,
+                                                                              height: 100,
+                                                                              child: Card(
+                                                                                elevation: 2,
+                                                                                child: Padding(
+                                                                                  padding: const EdgeInsets.all(8.0),
+                                                                                  child: Row(
+                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                    children: [
+                                                                                      Column(
+                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                                        children: [
+                                                                                          Row(
+                                                                                            children: [
+                                                                                              Text(
+                                                                                                post.name + " ",
+                                                                                                style: const TextStyle(
+                                                                                                  color: Colors.black,
+                                                                                                  fontWeight: FontWeight.bold,
+                                                                                                ),
                                                                                               ),
-                                                                                            ),
-                                                                                            Text(
-                                                                                              post.is_you == true ? '(You)' : '',
-                                                                                              style: const TextStyle(
-                                                                                                color: Colors.black,
-                                                                                                fontWeight: FontWeight.bold,
+                                                                                              Text(
+                                                                                                post.is_you == true ? '(You)' : '',
+                                                                                                style: const TextStyle(
+                                                                                                  color: Colors.black,
+                                                                                                  fontWeight: FontWeight.bold,
+                                                                                                ),
                                                                                               ),
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                        Text(
-                                                                                          post.auction_price,
-                                                                                          textAlign: TextAlign.left,
-                                                                                          style: const TextStyle(
-                                                                                            color: Colors.black,
-                                                                                            fontWeight: FontWeight.bold,
+                                                                                            ],
                                                                                           ),
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ],
+                                                                                          Text(
+                                                                                            post.auction_price,
+                                                                                            textAlign: TextAlign.left,
+                                                                                            style: const TextStyle(
+                                                                                              color: Colors.black,
+                                                                                              fontWeight: FontWeight.bold,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
                                                                                 ),
                                                                               ),
                                                                             ),
-                                                                          ),
-                                                                        ]
-                                                                      ]))
-                                                              .toList());
-                                                    }
-                                                    return new Center(
-                                                      child: new Column(
-                                                        children: <Widget>[
-                                                          new Padding(
-                                                              padding:
-                                                                  new EdgeInsets
-                                                                          .all(
-                                                                      50.0)),
-                                                          const CircularProgressIndicator(),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  })
-                                            ],
-                                          ),
-                                        )),
+                                                                          ]
+                                                                        ]))
+                                                                .toList());
+                                                      }
+                                                      return new Center(
+                                                        child: new Column(
+                                                          children: <Widget>[
+                                                            new Padding(
+                                                                padding:
+                                                                    new EdgeInsets
+                                                                            .all(
+                                                                        50.0)),
+                                                            const CircularProgressIndicator(),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    })
+                                              ],
+                                            ),
+                                          ))
+                                    ],
                                     const SizedBox(height: 30),
                                     CountdownTimer(
                                       endTime:
@@ -464,107 +459,100 @@ class _DetailsState extends State<Details> {
                                             ),
                                             onPressed: () {
                                               showModalBottomSheet<void>(
+                                                isScrollControlled: true,
                                                 context: context,
                                                 builder:
                                                     (BuildContext context) {
-                                                  return Container(
-                                                    height: 300,
-                                                    color: Colors.white,
-                                                    child: Center(
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: <Widget>[
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(10),
-                                                            child: TextField(
-                                                              controller:
-                                                                  priceController,
-                                                              decoration:
-                                                                  const InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(),
-                                                                labelText:
-                                                                    'Bid Price',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          // Container(
-                                                          //   padding:
-                                                          //       const EdgeInsets
-                                                          //               .fromLTRB(
-                                                          //           10,
-                                                          //           10,
-                                                          //           10,
-                                                          //           0),
-                                                          //   child: TextField(
-                                                          //     obscureText: true,
-                                                          //     controller:
-                                                          //         noteController,
-                                                          //     decoration:
-                                                          //         const InputDecoration(
-                                                          //       border:
-                                                          //           OutlineInputBorder(),
-                                                          //       labelText:
-                                                          //           'Reason',
-                                                          //     ),
-                                                          //   ),
-                                                          // ),
-                                                          Container(
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    10),
+                                                  return SingleChildScrollView(
+                                                    child: GestureDetector(
+                                                      child: Padding(
+                                                        padding: EdgeInsets.only(
+                                                            bottom:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .viewInsets
+                                                                    .bottom),
+                                                        child: Container(
+                                                          height: 300,
+                                                          color: Colors.white,
+                                                          child: Center(
                                                             child: Column(
-                                                              children: [
-                                                                ElevatedButton(
-                                                                  style: ElevatedButton
-                                                                      .styleFrom(
-                                                                    minimumSize:
-                                                                        const Size.fromHeight(
-                                                                            50),
-                                                                    primary: Color(
-                                                                        0xFF696cff), // background
-                                                                    onPrimary:
-                                                                        Colors
-                                                                            .white, // foreground
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: <
+                                                                  Widget>[
+                                                                Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(10),
+                                                                  child:
+                                                                      TextField(
+                                                                    controller:
+                                                                        priceController,
+                                                                    decoration:
+                                                                        const InputDecoration(
+                                                                      border:
+                                                                          OutlineInputBorder(),
+                                                                      labelText:
+                                                                          'Bid Price',
+                                                                    ),
                                                                   ),
-                                                                  onPressed:
-                                                                      () {
-                                                                    bid(priceController
-                                                                        .text);
-                                                                  },
-                                                                  child: Text(
-                                                                      'Bid'),
                                                                 ),
-                                                                SizedBox(
-                                                                    height: 10),
-                                                                ElevatedButton(
-                                                                  child: const Text(
-                                                                      'Close BottomSheet'),
-                                                                  style: ElevatedButton
-                                                                      .styleFrom(
-                                                                    minimumSize:
-                                                                        const Size.fromHeight(
-                                                                            50),
-                                                                    primary: Color(
-                                                                        0xFF696cff), // background
-                                                                    onPrimary:
-                                                                        Colors
-                                                                            .white, // foreground
+                                                                Container(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                  child: Column(
+                                                                    children: [
+                                                                      ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          minimumSize:
+                                                                              const Size.fromHeight(50),
+                                                                          primary:
+                                                                              Color(0xFF696cff), // background
+                                                                          onPrimary:
+                                                                              Colors.white, // foreground
+                                                                        ),
+                                                                        onPressed:
+                                                                            () {
+                                                                          bid(priceController
+                                                                              .text);
+                                                                        },
+                                                                        child: Text(
+                                                                            'Bid'),
+                                                                      ),
+                                                                      SizedBox(
+                                                                          height:
+                                                                              10),
+                                                                      ElevatedButton(
+                                                                        child: const Text(
+                                                                            'Close '),
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          minimumSize:
+                                                                              const Size.fromHeight(50),
+                                                                          primary:
+                                                                              Color(0xFF696cff), // background
+                                                                          onPrimary:
+                                                                              Colors.white, // foreground
+                                                                        ),
+                                                                        onPressed:
+                                                                            () =>
+                                                                                Navigator.pop(context),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                  onPressed: () =>
-                                                                      Navigator.pop(
-                                                                          context),
                                                                 ),
                                                               ],
                                                             ),
                                                           ),
-                                                        ],
+                                                        ),
                                                       ),
                                                     ),
                                                   );
@@ -597,107 +585,100 @@ class _DetailsState extends State<Details> {
                                             ),
                                             onPressed: () {
                                               showModalBottomSheet<void>(
+                                                isScrollControlled: true,
                                                 context: context,
                                                 builder:
                                                     (BuildContext context) {
-                                                  return Container(
-                                                    height: 300,
-                                                    color: Colors.white,
-                                                    child: Center(
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: <Widget>[
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(10),
-                                                            child: TextField(
-                                                              controller:
-                                                                  priceController,
-                                                              decoration:
-                                                                  const InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(),
-                                                                labelText:
-                                                                    'Bid Price',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          // Container(
-                                                          //   padding:
-                                                          //       const EdgeInsets
-                                                          //               .fromLTRB(
-                                                          //           10,
-                                                          //           10,
-                                                          //           10,
-                                                          //           0),
-                                                          //   child: TextField(
-                                                          //     obscureText: true,
-                                                          //     controller:
-                                                          //         noteController,
-                                                          //     decoration:
-                                                          //         const InputDecoration(
-                                                          //       border:
-                                                          //           OutlineInputBorder(),
-                                                          //       labelText:
-                                                          //           'Reason',
-                                                          //     ),
-                                                          //   ),
-                                                          // ),
-                                                          Container(
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    10),
+                                                  return SingleChildScrollView(
+                                                    child: GestureDetector(
+                                                      child: Padding(
+                                                        padding: EdgeInsets.only(
+                                                            bottom:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .viewInsets
+                                                                    .bottom),
+                                                        child: Container(
+                                                          height: 300,
+                                                          color: Colors.white,
+                                                          child: Center(
                                                             child: Column(
-                                                              children: [
-                                                                ElevatedButton(
-                                                                  style: ElevatedButton
-                                                                      .styleFrom(
-                                                                    minimumSize:
-                                                                        const Size.fromHeight(
-                                                                            50),
-                                                                    primary: Color(
-                                                                        0xFF696cff), // background
-                                                                    onPrimary:
-                                                                        Colors
-                                                                            .white, // foreground
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: <
+                                                                  Widget>[
+                                                                Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(10),
+                                                                  child:
+                                                                      TextField(
+                                                                    controller:
+                                                                        priceController,
+                                                                    decoration:
+                                                                        const InputDecoration(
+                                                                      border:
+                                                                          OutlineInputBorder(),
+                                                                      labelText:
+                                                                          'Bid Price',
+                                                                    ),
                                                                   ),
-                                                                  onPressed:
-                                                                      () {
-                                                                    bid(priceController
-                                                                        .text);
-                                                                  },
-                                                                  child: Text(
-                                                                      'Bid'),
                                                                 ),
-                                                                SizedBox(
-                                                                    height: 10),
-                                                                ElevatedButton(
-                                                                  child: const Text(
-                                                                      'Close BottomSheet'),
-                                                                  style: ElevatedButton
-                                                                      .styleFrom(
-                                                                    minimumSize:
-                                                                        const Size.fromHeight(
-                                                                            50),
-                                                                    primary: Color(
-                                                                        0xFF696cff), // background
-                                                                    onPrimary:
-                                                                        Colors
-                                                                            .white, // foreground
+                                                                Container(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                  child: Column(
+                                                                    children: [
+                                                                      ElevatedButton(
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          minimumSize:
+                                                                              const Size.fromHeight(50),
+                                                                          primary:
+                                                                              Color(0xFF696cff), // background
+                                                                          onPrimary:
+                                                                              Colors.white, // foreground
+                                                                        ),
+                                                                        onPressed:
+                                                                            () {
+                                                                          bid(priceController
+                                                                              .text);
+                                                                        },
+                                                                        child: Text(
+                                                                            'Bid'),
+                                                                      ),
+                                                                      SizedBox(
+                                                                          height:
+                                                                              10),
+                                                                      ElevatedButton(
+                                                                        child: const Text(
+                                                                            'Close '),
+                                                                        style: ElevatedButton
+                                                                            .styleFrom(
+                                                                          minimumSize:
+                                                                              const Size.fromHeight(50),
+                                                                          primary:
+                                                                              Color(0xFF696cff), // background
+                                                                          onPrimary:
+                                                                              Colors.white, // foreground
+                                                                        ),
+                                                                        onPressed:
+                                                                            () =>
+                                                                                Navigator.pop(context),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                  onPressed: () =>
-                                                                      Navigator.pop(
-                                                                          context),
                                                                 ),
                                                               ],
                                                             ),
                                                           ),
-                                                        ],
+                                                        ),
                                                       ),
                                                     ),
                                                   );

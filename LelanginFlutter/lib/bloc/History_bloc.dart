@@ -10,10 +10,10 @@ Future<List<History>> fetchHistory() async {
   var token = jsonDecode(localStorage.getString('token').toString());
 
   final response = await http.get(
-    Uri.parse(dotenv.env['API_URL'].toString() + "/api/history"),
+    Uri.parse("${dotenv.env['API_URL']}/api/history"),
     headers: {
       "Content-Type": "application/json",
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer $token'
     },
   );
 
