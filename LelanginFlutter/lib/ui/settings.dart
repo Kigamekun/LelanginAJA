@@ -21,6 +21,7 @@ import 'package:image_picker/image_picker.dart';
 import '../auth_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:lelanginaja/widget/fullscreenloader.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -43,7 +44,7 @@ class _SettingsState extends State<Settings> {
   TextEditingController stateController = TextEditingController();
   TextEditingController zipcodeController = TextEditingController();
   TextEditingController countryController = TextEditingController();
-
+  bool _isLoading = false;
   final user = UserPreferences.myUser;
 
   @override
@@ -85,6 +86,9 @@ class _SettingsState extends State<Settings> {
       var responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
+        setState(() {
+          _isLoading = false;
+        });
         var data = jsonDecode(responseBody);
         SharedPreferences localStorage = await SharedPreferences.getInstance();
         localStorage.remove('user');
@@ -95,6 +99,9 @@ class _SettingsState extends State<Settings> {
           MaterialPageRoute(builder: (context) => const Settings()),
         );
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -118,6 +125,9 @@ class _SettingsState extends State<Settings> {
             });
       }
     } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       Response response =
           await post(Uri.parse("${dotenv.env['API_URL']}/api/edit"), body: {
         'name': name,
@@ -142,6 +152,9 @@ class _SettingsState extends State<Settings> {
           MaterialPageRoute(builder: (context) => const Settings()),
         );
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -203,74 +216,80 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       // appBar: buildAppBar(context),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
+      body: Stack(
         children: [
-          const AppBarLelangin(),
-          image != null
-              ? Center(
-                  child: Stack(
-                    children: [
-                      ClipOval(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Image.file(
-                            image!,
-                            fit: BoxFit.cover,
-                            width: 128,
-                            height: 128,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 4,
-                        child: ClipOval(
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            color: Theme.of(context).colorScheme.primary,
-                            child: const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 20,
+          if (_isLoading) FullScreenLoader(),
+          ListView(
+            physics: const BouncingScrollPhysics(),
+            children: [
+              const AppBarLelangin(),
+              image != null
+                  ? Center(
+                      child: Stack(
+                        children: [
+                          ClipOval(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Image.file(
+                                image!,
+                                fit: BoxFit.cover,
+                                width: 128,
+                                height: 128,
+                              ),
                             ),
                           ),
-                        ),
+                          Positioned(
+                            bottom: 0,
+                            right: 4,
+                            child: ClipOval(
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                color: Theme.of(context).colorScheme.primary,
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    )
+                  : ProfileWidget(
+                      imagePath: thumb,
+                      onClicked: () async {
+                        setState(() {
+                          isEdit = !isEdit;
+                        });
+                      },
+                    ),
+              const SizedBox(height: 24),
+              buildName(user),
+              const SizedBox(height: 24),
+
+              // const SizedBox(height: 24),
+              // const SizedBox(height: 48),
+              // buildAbout(user),
+              if (isEdit) buildEdit(user),
+
+              // const SizedBox(height: 5),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    primary:
+                        const Color.fromARGB(255, 236, 23, 33), // background
+                    onPrimary: Colors.white, // foreground
                   ),
-                )
-              : ProfileWidget(
-                  imagePath: thumb,
-                  onClicked: () async {
-                    setState(() {
-                      isEdit = !isEdit;
-                    });
+                  onPressed: () {
+                    logout();
                   },
+                  child: const Text('Logout'),
                 ),
-          const SizedBox(height: 24),
-          buildName(user),
-          const SizedBox(height: 24),
-
-          // const SizedBox(height: 24),
-          // const SizedBox(height: 48),
-          // buildAbout(user),
-          if (isEdit) buildEdit(user),
-
-          // const SizedBox(height: 5),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                primary: const Color.fromARGB(255, 236, 23, 33), // background
-                onPrimary: Colors.white, // foreground
               ),
-              onPressed: () {
-                logout();
-              },
-              child: const Text('Logout'),
-            ),
+            ],
           ),
         ],
       ),
@@ -423,6 +442,9 @@ class _SettingsState extends State<Settings> {
                 onPrimary: Colors.white, // foreground
               ),
               onPressed: () {
+                setState(() {
+                  _isLoading = true;
+                });
                 edit(
                     nameController.text,
                     emailController.text,

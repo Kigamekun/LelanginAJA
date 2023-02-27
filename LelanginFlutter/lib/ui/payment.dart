@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'dart:developer' as developer;
 import 'package:lelanginaja/ui/history.dart';
+import 'package:lelanginaja/widget/fullscreenloader.dart';
 
 class Payment extends StatefulWidget {
   final String id;
@@ -16,7 +17,7 @@ class Payment extends StatefulWidget {
 
 class _PaymentState extends State<Payment> {
   bool isPayed = false;
-
+  bool _isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -27,17 +28,26 @@ class _PaymentState extends State<Payment> {
     ..setNavigationDelegate(
       NavigationDelegate(
         onProgress: (int progress) {
-          // Update loading bar.
-          developer.log('A');
+          setState(() {
+            _isLoading = true;
+          });
         },
         onPageStarted: (String url) {
-          developer.log('B');
+          setState(() {
+            _isLoading = false;
+          });
         },
-        onPageFinished: (String url) {},
+        onPageFinished: (String url) {
+          setState(() {
+            _isLoading = false;
+          });
+        },
         onWebResourceError: (WebResourceError error) {},
         onNavigationRequest: (NavigationRequest request) {
           if (request.url
-              .startsWith('${dotenv.env['API_URL']}/pay-api-finish')) {
+                  .startsWith('${dotenv.env['API_URL']}/pay-api-finish') ||
+              request.url.startsWith('${dotenv.env['API_URL']}/history') ||
+              request.url.startsWith('${dotenv.env['API_URL']}/login')) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => Histories()),
@@ -57,9 +67,14 @@ class _PaymentState extends State<Payment> {
           title: const Text('Payment Auction'),
         ),
         resizeToAvoidBottomInset: false,
-        body: Container(
-          padding: const EdgeInsets.all(10),
-          child: WebViewWidget(controller: webViewController),
+        body: Stack(
+          children: [
+            if (_isLoading) const FullScreenLoader(),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: WebViewWidget(controller: webViewController),
+            ),
+          ],
         ));
   }
 }

@@ -117,7 +117,7 @@
 
                                     <td>{{ $item->title }}</td>
                                     <td>{{ $item->message }}</td>
-                                    <td>{{ $item->for }}</td>
+                                    <td>{{ DB::table('users')->select('name')->where('id',$item->for)->first()->name }}</td>
 
                                     <td style="width: 20%">
                                         <a class="btn btn-danger btn-delete"

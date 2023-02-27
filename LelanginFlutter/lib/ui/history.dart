@@ -23,7 +23,7 @@ List list = [
 ];
 
 class Histories extends StatefulWidget {
-  Histories({Key? key}) : super(key: key);
+  const Histories({Key? key}) : super(key: key);
 
   @override
   State<Histories> createState() => _HistoriesState();
@@ -36,9 +36,8 @@ class _HistoriesState extends State<Histories> {
 
     try {
       Response response = await post(
-        Uri.parse(
-            dotenv.env['API_URL'].toString() + "/api/cancel-bid?id=" + id),
-        headers: {'Authorization': 'Bearer ' + token},
+        Uri.parse("${dotenv.env['API_URL']}/api/cancel-bid?id=$id"),
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
@@ -49,19 +48,19 @@ class _HistoriesState extends State<Histories> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Error"),
-                content: Text('Error Terjadi'),
+                title: const Text("Error"),
+                content: const Text('Error Terjadi'),
                 actions: [
                   ElevatedButton(
-                    child: const Text('Kembali'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
-                      primary: Color(0xFF696cff), // background
+                      primary: const Color(0xFF696cff), // background
                       onPrimary: Colors.white, // foreground
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
+                    child: const Text('Kembali'),
                   )
                 ],
               );
@@ -78,9 +77,7 @@ class _HistoriesState extends State<Histories> {
       resizeToAvoidBottomInset: false,
       body: ListView(children: [
         Column(children: [
-          Container(
-            child: AppBarLelangin(),
-          ),
+          const AppBarLelangin(),
           Container(
               margin: const EdgeInsets.all(10),
               child: Wrap(
@@ -135,10 +132,31 @@ class _HistoriesState extends State<Histories> {
                                                                         FontWeight
                                                                             .bold,
                                                                     fontSize:
-                                                                        10.0),
+                                                                        11.0),
                                                               ),
+                                                              if (post.status ==
+                                                                  2) ...[
+                                                                const SizedBox(
+                                                                    height: 5),
+                                                                Text(
+                                                                  'Finish payment before ${post.last_payment}',
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    color: Color(
+                                                                        0xFF696cff),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        10.0,
+                                                                  ),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .start,
+                                                                )
+                                                              ],
                                                               const SizedBox(
-                                                                  height: 20),
+                                                                  height: 10),
                                                               Wrap(
                                                                   children: <
                                                                       Widget>[
@@ -197,16 +215,16 @@ class _HistoriesState extends State<Histories> {
                                                                                     mainAxisSize: MainAxisSize.min,
                                                                                     children: <Widget>[
                                                                                       Container(
-                                                                                        padding: EdgeInsets.all(20),
+                                                                                        padding: const EdgeInsets.all(20),
                                                                                         child: Column(
                                                                                           children: [
-                                                                                            Image(image: AssetImage('assets/images/shipping.jpg')),
-                                                                                            SizedBox(height: 10),
+                                                                                            const Image(image: AssetImage('assets/images/shipping.jpg')),
+                                                                                            const SizedBox(height: 10),
                                                                                             Row(
                                                                                               children: [
                                                                                                 const Opacity(opacity: .6, child: Text('NO RESI', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
                                                                                                 const Spacer(),
-                                                                                                Opacity(opacity: .6, child: Text(post.no_resi, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
+                                                                                                Opacity(opacity: .6, child: Text(post.no_resi, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
                                                                                               ],
                                                                                             ),
                                                                                             const SizedBox(height: 10),
@@ -214,7 +232,7 @@ class _HistoriesState extends State<Histories> {
                                                                                               children: [
                                                                                                 const Opacity(opacity: .6, child: Text('AIRPLANE', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
                                                                                                 const Spacer(),
-                                                                                                Opacity(opacity: .6, child: Text(post.airplane, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
+                                                                                                Opacity(opacity: .6, child: Text(post.airplane, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
                                                                                               ],
                                                                                             ),
                                                                                             const SizedBox(height: 10),
@@ -222,18 +240,18 @@ class _HistoriesState extends State<Histories> {
                                                                                               children: [
                                                                                                 const Opacity(opacity: .6, child: Text('COURIER', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
                                                                                                 const Spacer(),
-                                                                                                Opacity(opacity: .6, child: Text(post.courier, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
+                                                                                                Opacity(opacity: .6, child: Text(post.courier, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
                                                                                               ],
                                                                                             ),
                                                                                             const SizedBox(height: 30),
                                                                                             ElevatedButton(
-                                                                                              child: const Text('Close'),
                                                                                               style: ElevatedButton.styleFrom(
                                                                                                 minimumSize: const Size.fromHeight(50),
-                                                                                                primary: Color(0xFF696cff), // background
+                                                                                                primary: const Color(0xFF696cff), // background
                                                                                                 onPrimary: Colors.white, // foreground
                                                                                               ),
                                                                                               onPressed: () => Navigator.pop(context),
+                                                                                              child: const Text('Close'),
                                                                                             ),
                                                                                           ],
                                                                                         ),
@@ -264,22 +282,6 @@ class _HistoriesState extends State<Histories> {
                                                                     ] else if (post
                                                                             .status ==
                                                                         2) ...[
-                                                                      // ElevatedButton(
-                                                                      //   style: ElevatedButton
-                                                                      //       .styleFrom(
-                                                                      //     primary: const Color.fromARGB(
-                                                                      //         255,
-                                                                      //         236,
-                                                                      //         7,
-                                                                      //         64), // background
-                                                                      //     onPrimary:
-                                                                      //         Colors.white, // foreground
-                                                                      //   ),
-                                                                      //   onPressed:
-                                                                      //       () {},
-                                                                      //   child: const Text(
-                                                                      //       'Cancel Bid'),
-                                                                      // ),
                                                                       ElevatedButton(
                                                                         style: ElevatedButton
                                                                             .styleFrom(

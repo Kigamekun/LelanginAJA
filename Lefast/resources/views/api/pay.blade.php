@@ -53,7 +53,7 @@
                                     result: result
                                 },
                                 success: function(data) {
-                                    window.location =  '/pay-api-finish';
+                                    window.location =  '/refresh';
                                 }
                             });
                         },
@@ -74,7 +74,7 @@
                                     result: result
                                 },
                                 success: function(data) {
-                                    window.location =  '/pay-api-finish';
+                                    window.location =  '/refresh';
                                 }
                             });
                         },
@@ -95,7 +95,7 @@
                                     result: result
                                 },
                                 success: function(data) {
-                                    window.location =  '/pay-api-finish';
+                                    window.location =  '/refresh';
                                 }
                             });
                         }

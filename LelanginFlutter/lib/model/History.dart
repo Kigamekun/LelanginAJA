@@ -17,6 +17,7 @@ class History {
   final String airplane;
   final String no_resi;
   final String file_resi;
+  final String? last_payment;
   final int status;
   final String thumb;
 
@@ -36,6 +37,7 @@ class History {
       required this.airplane,
       required this.no_resi,
       required this.file_resi,
+      required this.last_payment,
       required this.status,
       required this.thumb});
 
@@ -55,6 +57,7 @@ class History {
       airplane: json["airplane"],
       no_resi: json["no_resi"],
       file_resi: json["file_resi"],
+      last_payment: json["last_payment"],
       // saleroom_notice: json['product']["saleroom_notice"],
       // catalogue_note: json['product']["catalogue_note"],
       status: json["status"],

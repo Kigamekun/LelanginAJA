@@ -38,6 +38,7 @@ class ProductController extends Controller
             'end_auction' => $request->end_auction,
             'condition' => $request->condition,
             'saleroom_notice' => $request->saleroom,
+            'category_id'=>$request->category,
             'created_by' => Auth::id(),
             'catalogue_note' => $request->catalogue,
             'thumb' => $thumbname

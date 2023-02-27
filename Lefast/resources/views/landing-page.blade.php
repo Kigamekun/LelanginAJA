@@ -144,7 +144,7 @@
         <div id="carouselExample" style="width: 100%;height:400px" class="carousel slide" data-bs-ride="carousel">
             <ol class="carousel-indicators">
                 @foreach ($banner as $key => $item)
-                    <li data-bs-target="#carouselExample" data-bs-slide-to="0"
+                    <li data-bs-target="#carouselExample" data-bs-slide-to="{{ $key }}"
                         <?= $key == 0 ? 'class="active" aria-current="true"' : '' ?>></li>
                 @endforeach
             </ol>
@@ -391,4 +391,15 @@
             }
         });
     </script>
+    
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PH5E80PZT2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-PH5E80PZT2');
+</script>
+
 @endsection

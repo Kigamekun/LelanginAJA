@@ -19,13 +19,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lelanginaja/widget/fullscreenloader.dart';
 
 Future<Detail> fetchDetail(String id) async {
   SharedPreferences localStorage = await SharedPreferences.getInstance();
   var token = jsonDecode(localStorage.getString('token').toString());
 
   final response = await http.get(
-    Uri.parse(dotenv.env['API_URL'].toString() + "/api/product?id=" + id),
+    Uri.parse("${dotenv.env['API_URL']}/api/product?id=$id"),
     headers: {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ' + token
@@ -39,7 +40,7 @@ Future<Detail> fetchDetail(String id) async {
     developer.inspect(responseJson["data"]);
     return Detail.fromJson((responseJson as Map<String, dynamic>)["data"]);
   } else {
-    developer.log(dotenv.env['API_URL'].toString() + "/api/product?id=" + id);
+    developer.log("${dotenv.env['API_URL']}/api/product?id=$id");
     developer.log(response.statusCode.toString());
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -117,6 +118,7 @@ class _DetailsState extends State<Details> {
   TextEditingController priceController = TextEditingController();
 
   TextEditingController noteController = TextEditingController();
+  bool _isLoading = false;
 
   void bid(String price) async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -124,14 +126,17 @@ class _DetailsState extends State<Details> {
 
     try {
       Response response = await post(
-        Uri.parse(dotenv.env['API_URL'].toString() + "/api/bid/" + widget.id),
+        Uri.parse("${dotenv.env['API_URL']}/api/bid/${widget.id}"),
         body: {'auction_price': price},
-        headers: {'Authorization': 'Bearer ' + token},
+        headers: {'Authorization': "Bearer $token"},
       );
       developer.log(response.statusCode.toString());
 
       if (response.statusCode == 200) {
         setState(() {});
+        setState(() {
+          _isLoading = false;
+        });
         priceController.clear();
         showDialog(
             context: context,
@@ -141,7 +146,6 @@ class _DetailsState extends State<Details> {
                 content: Text('Bid already pushed'),
                 actions: [
                   ElevatedButton(
-                    child: const Text('Kembali'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                       primary: Color(0xFF696cff), // background
@@ -150,11 +154,15 @@ class _DetailsState extends State<Details> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
+                    child: const Text('Kembali'),
                   )
                 ],
               );
             });
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -163,7 +171,6 @@ class _DetailsState extends State<Details> {
                 content: Text(jsonDecode(response.body)['message']),
                 actions: [
                   ElevatedButton(
-                    child: const Text('Kembali'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                       primary: Color(0xFF696cff), // background
@@ -172,6 +179,7 @@ class _DetailsState extends State<Details> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
+                    child: const Text('Kembali'),
                   )
                 ],
               );
@@ -187,105 +195,107 @@ class _DetailsState extends State<Details> {
     return MaterialApp(
         home: Scaffold(
       resizeToAvoidBottomInset: false,
-      body: ListView(children: [
-        Container(
-          child: AppBarLelangin(),
-        ),
-        Container(
-          child: FutureBuilder<Detail>(
-            future: fetchDetail(widget.id),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                Detail? detail = snapshot.data;
-                return Container(
-                    child: Column(
-                  children: [
-                    SizedBox(
-                      width: 400,
-                      child: Card(
-                        semanticContainer: true,
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        elevation: 5,
-                        margin: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Container(
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.all(20),
-                                child: Text(detail!.name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ))),
-                            Image.network(detail.thumb,
-                                width: double.infinity, height: 400),
-                            Container(
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  children: [
-                                    Row(
+      body: Stack(
+        children: [
+          if (_isLoading) FullScreenLoader(),
+          ListView(children: [
+            Container(
+              child: AppBarLelangin(),
+            ),
+            Container(
+              child: FutureBuilder<Detail>(
+                future: fetchDetail(widget.id),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    Detail? detail = snapshot.data;
+                    return Column(
+                      children: [
+                        SizedBox(
+                          width: 400,
+                          child: Card(
+                            semanticContainer: true,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            elevation: 5,
+                            margin: const EdgeInsets.all(10),
+                            child: Column(
+                              children: [
+                                Container(
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.all(20),
+                                    child: Text(detail!.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ))),
+                                Image.network(detail.thumb,
+                                    width: double.infinity, height: 400),
+                                Container(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
                                       children: [
-                                        const Text('Current Bid',
-                                            style: TextStyle(fontSize: 12)),
-                                        const Spacer(),
-                                        Text(detail.current_bid.toString(),
-                                            style: TextStyle(fontSize: 12)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        const Text('Highest Bid',
-                                            style: TextStyle(fontSize: 12)),
-                                        const Spacer(),
-                                        Text(detail.highest_bid,
-                                            style: TextStyle(fontSize: 12)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        const Text('Auction Closed',
-                                            style: TextStyle(fontSize: 12)),
-                                        const Spacer(),
-                                        Text(detail.auction_closed,
-                                            style: TextStyle(fontSize: 12)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        const Text('Start From',
-                                            style: TextStyle(fontSize: 12)),
-                                        const Spacer(),
-                                        Text(detail.start_from,
-                                            style: TextStyle(fontSize: 12)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 50),
-                                    if (detail.is_bid >= 0) ...[
-                                      Container(
-                                          height: 200,
-                                          child: SingleChildScrollView(
-                                            child: Wrap(
-                                              children: [
-                                                new FutureBuilder<List<Bidder>>(
-                                                    future:
-                                                        fetchBidder(detail.id),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot.hasData) {
-                                                        List<Bidder>? bidder =
-                                                            snapshot.data;
-                                                        return Wrap(
-                                                            children: bidder!
-                                                                .map((post) =>
-                                                                    new Wrap(
-                                                                        children: <
-                                                                            Widget>[
+                                        Row(
+                                          children: [
+                                            const Text('Current Bid',
+                                                style: TextStyle(fontSize: 12)),
+                                            const Spacer(),
+                                            Text(detail.current_bid.toString(),
+                                                style: TextStyle(fontSize: 12)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            const Text('Highest Bid',
+                                                style: TextStyle(fontSize: 12)),
+                                            const Spacer(),
+                                            Text(detail.highest_bid,
+                                                style: TextStyle(fontSize: 12)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            const Text('Auction Closed',
+                                                style: TextStyle(fontSize: 12)),
+                                            const Spacer(),
+                                            Text(detail.auction_closed,
+                                                style: TextStyle(fontSize: 12)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            const Text('Start From',
+                                                style: TextStyle(fontSize: 12)),
+                                            const Spacer(),
+                                            Text(detail.start_from,
+                                                style: TextStyle(fontSize: 12)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 50),
+                                        if (detail.is_bid >= 0) ...[
+                                          Container(
+                                              height: 200,
+                                              child: SingleChildScrollView(
+                                                child: Wrap(
+                                                  children: [
+                                                    new FutureBuilder<
+                                                            List<Bidder>>(
+                                                        future: fetchBidder(
+                                                            detail.id),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                              .hasData) {
+                                                            List<Bidder>?
+                                                                bidder =
+                                                                snapshot.data;
+                                                            return Wrap(
+                                                                children: bidder!
+                                                                    .map((post) => new Wrap(children: <Widget>[
                                                                           if (post
                                                                               .is_win) ...[
                                                                             SizedBox(
@@ -306,7 +316,7 @@ class _DetailsState extends State<Details> {
                                                                                           Row(
                                                                                             children: [
                                                                                               Text(
-                                                                                                post.name + " ",
+                                                                                                "${post.name} ",
                                                                                                 style: const TextStyle(
                                                                                                   color: Colors.white,
                                                                                                   fontWeight: FontWeight.bold,
@@ -359,7 +369,7 @@ class _DetailsState extends State<Details> {
                                                                                           Row(
                                                                                             children: [
                                                                                               Text(
-                                                                                                post.name + " ",
+                                                                                                "${post.name} ",
                                                                                                 style: const TextStyle(
                                                                                                   color: Colors.black,
                                                                                                   fontWeight: FontWeight.bold,
@@ -391,361 +401,336 @@ class _DetailsState extends State<Details> {
                                                                             ),
                                                                           ]
                                                                         ]))
-                                                                .toList());
-                                                      }
-                                                      return new Center(
-                                                        child: new Column(
-                                                          children: <Widget>[
-                                                            new Padding(
-                                                                padding:
-                                                                    new EdgeInsets
+                                                                    .toList());
+                                                          }
+                                                          return new Center(
+                                                            child: new Column(
+                                                              children: <
+                                                                  Widget>[
+                                                                new Padding(
+                                                                    padding: new EdgeInsets
                                                                             .all(
                                                                         50.0)),
-                                                            const CircularProgressIndicator(),
-                                                          ],
-                                                        ),
-                                                      );
-                                                    })
-                                              ],
-                                            ),
-                                          ))
-                                    ],
-                                    const SizedBox(height: 30),
-                                    CountdownTimer(
-                                      endTime:
-                                          DateTime.parse(detail.end_auction)
-                                                  .millisecondsSinceEpoch +
-                                              1000 * 30,
-                                      widgetBuilder:
-                                          (_, CurrentRemainingTime? time) {
-                                        if (time == null) {
-                                          return Text('EXPIRED');
-                                        }
-                                        return Text(
-                                            '${time.days} d ${time.hours} h ${time.min} m ${time.sec} s');
-                                      },
-                                    ),
-                                    const SizedBox(height: 30),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        // ElevatedButton(
-                                        //   onPressed: () {},
-                                        //   style: ElevatedButton.styleFrom(
-                                        //     shape: RoundedRectangleBorder(
-                                        //         side: const BorderSide(
-                                        //             width: 1,
-                                        //             color: Color(0xFF696cff)),
-                                        //         borderRadius:
-                                        //             BorderRadius.circular(5)),
-                                        //     primary: Colors.white,
-                                        //   ),
-                                        //   child: const Text(
-                                        //     'Save',
-                                        //     style: TextStyle(
-                                        //         fontSize: 15,
-                                        //         color: Color(0xFF696cff)),
-                                        //   ),
-                                        // ),
-                                        // const SizedBox(width: 20),
-                                        if (detail.is_bid == 0) ...[
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              primary: const Color(
-                                                  0xFF696cff), // background
-                                              onPrimary:
-                                                  Colors.white, // foreground
-                                            ),
-                                            onPressed: () {
-                                              showModalBottomSheet<void>(
-                                                isScrollControlled: true,
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return SingleChildScrollView(
-                                                    child: GestureDetector(
-                                                      child: Padding(
-                                                        padding: EdgeInsets.only(
-                                                            bottom:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .viewInsets
-                                                                    .bottom),
-                                                        child: Container(
-                                                          height: 300,
-                                                          color: Colors.white,
-                                                          child: Center(
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: <
-                                                                  Widget>[
-                                                                Container(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .all(10),
-                                                                  child:
-                                                                      TextField(
-                                                                    controller:
-                                                                        priceController,
-                                                                    decoration:
-                                                                        const InputDecoration(
-                                                                      border:
-                                                                          OutlineInputBorder(),
-                                                                      labelText:
-                                                                          'Bid Price',
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                Container(
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              10),
-                                                                  child: Column(
-                                                                    children: [
-                                                                      ElevatedButton(
-                                                                        style: ElevatedButton
-                                                                            .styleFrom(
-                                                                          minimumSize:
-                                                                              const Size.fromHeight(50),
-                                                                          primary:
-                                                                              Color(0xFF696cff), // background
-                                                                          onPrimary:
-                                                                              Colors.white, // foreground
-                                                                        ),
-                                                                        onPressed:
-                                                                            () {
-                                                                          bid(priceController
-                                                                              .text);
-                                                                        },
-                                                                        child: Text(
-                                                                            'Bid'),
-                                                                      ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              10),
-                                                                      ElevatedButton(
-                                                                        child: const Text(
-                                                                            'Close '),
-                                                                        style: ElevatedButton
-                                                                            .styleFrom(
-                                                                          minimumSize:
-                                                                              const Size.fromHeight(50),
-                                                                          primary:
-                                                                              Color(0xFF696cff), // background
-                                                                          onPrimary:
-                                                                              Colors.white, // foreground
-                                                                        ),
-                                                                        onPressed:
-                                                                            () =>
-                                                                                Navigator.pop(context),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
+                                                                const CircularProgressIndicator(),
                                                               ],
                                                             ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            child: const Text('Bid'),
-                                          ),
-                                        ] else if (detail.is_bid == 1) ...[
-                                          ElevatedButton(
-                                              onPressed: () {},
-                                              style: ElevatedButton.styleFrom(
-                                                primary: Color.fromARGB(
-                                                    255, 209, 105, 8),
-                                              ),
-                                              child: const Text(
-                                                "You're Already bid",
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                          const SizedBox(width: 20),
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              primary: const Color(
-                                                  0xFF696cff), // background
-                                              onPrimary:
-                                                  Colors.white, // foreground
-                                            ),
-                                            onPressed: () {
-                                              showModalBottomSheet<void>(
-                                                isScrollControlled: true,
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return SingleChildScrollView(
-                                                    child: GestureDetector(
-                                                      child: Padding(
-                                                        padding: EdgeInsets.only(
-                                                            bottom:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .viewInsets
-                                                                    .bottom),
-                                                        child: Container(
-                                                          height: 300,
-                                                          color: Colors.white,
-                                                          child: Center(
-                                                            child: Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: <
-                                                                  Widget>[
-                                                                Container(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .all(10),
-                                                                  child:
-                                                                      TextField(
-                                                                    controller:
-                                                                        priceController,
-                                                                    decoration:
-                                                                        const InputDecoration(
-                                                                      border:
-                                                                          OutlineInputBorder(),
-                                                                      labelText:
-                                                                          'Bid Price',
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                Container(
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              10),
-                                                                  child: Column(
-                                                                    children: [
-                                                                      ElevatedButton(
-                                                                        style: ElevatedButton
-                                                                            .styleFrom(
-                                                                          minimumSize:
-                                                                              const Size.fromHeight(50),
-                                                                          primary:
-                                                                              Color(0xFF696cff), // background
-                                                                          onPrimary:
-                                                                              Colors.white, // foreground
-                                                                        ),
-                                                                        onPressed:
-                                                                            () {
-                                                                          bid(priceController
-                                                                              .text);
-                                                                        },
-                                                                        child: Text(
-                                                                            'Bid'),
-                                                                      ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              10),
-                                                                      ElevatedButton(
-                                                                        child: const Text(
-                                                                            'Close '),
-                                                                        style: ElevatedButton
-                                                                            .styleFrom(
-                                                                          minimumSize:
-                                                                              const Size.fromHeight(50),
-                                                                          primary:
-                                                                              Color(0xFF696cff), // background
-                                                                          onPrimary:
-                                                                              Colors.white, // foreground
-                                                                        ),
-                                                                        onPressed:
-                                                                            () =>
-                                                                                Navigator.pop(context),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            child: const Text('Bid'),
-                                          ),
-                                        ] else ...[
-                                          ElevatedButton(
-                                              onPressed: () {},
-                                              style: ElevatedButton.styleFrom(
-                                                primary: Color.fromARGB(
-                                                    255, 236, 72, 7),
-                                              ),
-                                              child: const Text(
-                                                'Auction ended',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.white,
+                                                          );
+                                                        })
+                                                  ],
                                                 ),
                                               ))
-                                        ]
+                                        ],
+                                        const SizedBox(height: 30),
+                                        CountdownTimer(
+                                          endTime:
+                                              DateTime.parse(detail.end_auction)
+                                                      .millisecondsSinceEpoch +
+                                                  10 * 30,
+                                          widgetBuilder:
+                                              (_, CurrentRemainingTime? time) {
+                                            if (time == null) {
+                                              return Text('EXPIRED');
+                                            }
+                                            return Text(
+                                                '${time.days} d ${time.hours} h ${time.min} m ${time.sec} s');
+                                          },
+                                        ),
+                                        const SizedBox(height: 30),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            if (detail.is_bid == 0) ...[
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: const Color(
+                                                      0xFF696cff), // background
+                                                  onPrimary: Colors
+                                                      .white, // foreground
+                                                ),
+                                                onPressed: () {
+                                                  showModalBottomSheet<void>(
+                                                    isScrollControlled: true,
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return SingleChildScrollView(
+                                                        child: GestureDetector(
+                                                          child: Padding(
+                                                            padding: EdgeInsets.only(
+                                                                bottom: MediaQuery.of(
+                                                                        context)
+                                                                    .viewInsets
+                                                                    .bottom),
+                                                            child: Container(
+                                                              height: 300,
+                                                              color:
+                                                                  Colors.white,
+                                                              child: Center(
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Container(
+                                                                      padding:
+                                                                          const EdgeInsets.all(
+                                                                              10),
+                                                                      child:
+                                                                          TextField(
+                                                                        controller:
+                                                                            priceController,
+                                                                        decoration:
+                                                                            const InputDecoration(
+                                                                          border:
+                                                                              OutlineInputBorder(),
+                                                                          labelText:
+                                                                              'Bid Price',
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Container(
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              10),
+                                                                      child:
+                                                                          Column(
+                                                                        children: [
+                                                                          ElevatedButton(
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              minimumSize: const Size.fromHeight(50),
+                                                                              primary: Color(0xFF696cff), // background
+                                                                              onPrimary: Colors.white, // foreground
+                                                                            ),
+                                                                            onPressed:
+                                                                                () {
+                                                                              setState(() {
+                                                                                _isLoading = true;
+                                                                              });
+                                                                              bid(priceController.text);
+                                                                            },
+                                                                            child:
+                                                                                Text('Bid'),
+                                                                          ),
+                                                                          SizedBox(
+                                                                              height: 10),
+                                                                          ElevatedButton(
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              minimumSize: const Size.fromHeight(50),
+                                                                              primary: Color(0xFF696cff), // background
+                                                                              onPrimary: Colors.white, // foreground
+                                                                            ),
+                                                                            onPressed: () =>
+                                                                                Navigator.pop(context),
+                                                                            child:
+                                                                                const Text('Close '),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: const Text('Bid'),
+                                              ),
+                                            ] else if (detail.is_bid == 1) ...[
+                                              ElevatedButton(
+                                                  onPressed: () {},
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary: Color.fromARGB(
+                                                        255, 209, 105, 8),
+                                                  ),
+                                                  child: const Text(
+                                                    "You're Already bid",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white,
+                                                    ),
+                                                  )),
+                                              const SizedBox(width: 20),
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: const Color(
+                                                      0xFF696cff), // background
+                                                  onPrimary: Colors
+                                                      .white, // foreground
+                                                ),
+                                                onPressed: () {
+                                                  showModalBottomSheet<void>(
+                                                    isScrollControlled: true,
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return SingleChildScrollView(
+                                                        child: GestureDetector(
+                                                          child: Padding(
+                                                            padding: EdgeInsets.only(
+                                                                bottom: MediaQuery.of(
+                                                                        context)
+                                                                    .viewInsets
+                                                                    .bottom),
+                                                            child: Container(
+                                                              height: 300,
+                                                              color:
+                                                                  Colors.white,
+                                                              child: Center(
+                                                                child: Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Container(
+                                                                      padding:
+                                                                          const EdgeInsets.all(
+                                                                              10),
+                                                                      child:
+                                                                          TextField(
+                                                                        controller:
+                                                                            priceController,
+                                                                        decoration:
+                                                                            const InputDecoration(
+                                                                          border:
+                                                                              OutlineInputBorder(),
+                                                                          labelText:
+                                                                              'Bid Price',
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Container(
+                                                                      padding:
+                                                                          EdgeInsets.all(
+                                                                              10),
+                                                                      child:
+                                                                          Column(
+                                                                        children: [
+                                                                          ElevatedButton(
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              minimumSize: const Size.fromHeight(50),
+                                                                              primary: Color(0xFF696cff), // background
+                                                                              onPrimary: Colors.white, // foreground
+                                                                            ),
+                                                                            onPressed:
+                                                                                () {
+                                                                              setState(() {
+                                                                                _isLoading = true;
+                                                                              });
+                                                                              bid(priceController.text);
+                                                                            },
+                                                                            child:
+                                                                                Text('Bid'),
+                                                                          ),
+                                                                          SizedBox(
+                                                                              height: 10),
+                                                                          ElevatedButton(
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              minimumSize: const Size.fromHeight(50),
+                                                                              primary: Color(0xFF696cff), // background
+                                                                              onPrimary: Colors.white, // foreground
+                                                                            ),
+                                                                            onPressed: () =>
+                                                                                Navigator.pop(context),
+                                                                            child:
+                                                                                const Text('Close '),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: const Text('Bid'),
+                                              ),
+                                            ] else ...[
+                                              ElevatedButton(
+                                                  onPressed: () {},
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary: Color.fromARGB(
+                                                        255, 236, 72, 7),
+                                                  ),
+                                                  child: const Text(
+                                                    'Auction ended',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ))
+                                            ]
+                                          ],
+                                        )
                                       ],
-                                    )
-                                  ],
-                                ))
-                          ],
+                                    ))
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(children: [
+                            GFAccordion(
+                                title: 'Description',
+                                contentChild: Html(data: detail.description)),
+                            GFAccordion(
+                                title: 'Condition Report',
+                                contentChild: Html(data: detail.condition)),
+                            GFAccordion(
+                                title: 'Salerooms Notice',
+                                contentChild:
+                                    Html(data: detail.saleroom_notice)),
+                            GFAccordion(
+                                title: 'Catalogue Note',
+                                contentChild:
+                                    Html(data: detail.catalogue_note)),
+                            // WebView(
+                            //   initialUrl: "https://belajarflutter.com/",
+                            //   javascriptMode: JavascriptMode.unrestricted,
+                            // ),
+                          ]),
+                        )
+                      ],
+                    );
+                  }
+                  return new Center(
+                    child: new Column(
+                      children: <Widget>[
+                        new Padding(padding: new EdgeInsets.all(50.0)),
+                        new CircularProgressIndicator(),
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(children: [
-                        GFAccordion(
-                            title: 'Description',
-                            contentChild: Html(data: detail.description)),
-                        GFAccordion(
-                            title: 'Condition Report',
-                            contentChild: Html(data: detail.condition)),
-                        GFAccordion(
-                            title: 'Salerooms Notice',
-                            contentChild: Html(data: detail.saleroom_notice)),
-                        GFAccordion(
-                            title: 'Catalogue Note',
-                            contentChild: Html(data: detail.catalogue_note)),
-                        // WebView(
-                        //   initialUrl: "https://belajarflutter.com/",
-                        //   javascriptMode: JavascriptMode.unrestricted,
-                        // ),
-                      ]),
-                    )
-                  ],
-                ));
-              }
-              return new Center(
-                child: new Column(
-                  children: <Widget>[
-                    new Padding(padding: new EdgeInsets.all(50.0)),
-                    new CircularProgressIndicator(),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ]),
+                  );
+                },
+              ),
+            ),
+          ]),
+        ],
+      ),
     ));
   }
 }

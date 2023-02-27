@@ -110,6 +110,9 @@
                                         $item->id ==
                                             DB::table('auctions')->where('product_id', $item->product->id)->orderBy('auction_price', 'DESC')->first()->id)
                                         @if (!is_null($item->snap_token) && $item->payment_status == 2)
+                                         <a  class="btn btn-warning" href="{{ route('admin.auction.invoice', ['id' => $item->id]) }}">
+                                        Invoice
+                                    </a>
                                             <button data-bs-toggle="modal" data-bs-target="#exampleModal"
                                                 class="btn btn-info" data-no_resi="{{ $item->no_resi }}"
                                                 data-airplane="{{ $item->airplane }}"

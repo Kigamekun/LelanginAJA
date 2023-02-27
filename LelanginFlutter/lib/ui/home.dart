@@ -4,14 +4,11 @@ import 'package:getwidget/getwidget.dart';
 import 'package:lelanginaja/widget/appbarlelangin.dart';
 import 'package:lelanginaja/model/Product.dart';
 import 'package:lelanginaja/bloc/Product_bloc.dart';
-import 'package:lelanginaja/bloc/Banner_bloc.dart';
-import 'package:lelanginaja/model/BannerLelangin.dart';
 
 import 'dart:developer' as developer;
 import 'package:lelanginaja/ui/detail.dart';
 
 import 'package:lelanginaja/widget/bottombarlelangin.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -49,7 +46,7 @@ class _HomeState extends State<Home> {
 
   _loadBannerData() async {
     final response = await http.get(
-      Uri.parse(dotenv.env['API_URL'].toString() + "/api/banner"),
+      Uri.parse("${dotenv.env['API_URL']}/api/banner"),
     );
 
     if (response.statusCode == 200) {
@@ -82,10 +79,8 @@ class _HomeState extends State<Home> {
           children: [
             Column(
               children: [
-                Container(
-                  child: AppBarLelangin(),
-                ),
-                if (bannerList.length != 0) ...[
+                const AppBarLelangin(),
+                if (bannerList.isNotEmpty) ...[
                   GFCarousel(
                     items: bannerList.map(
                       (url) {
@@ -150,27 +145,12 @@ class _HomeState extends State<Home> {
                                                       softWrap: false,
                                                     ),
                                                   ),
-                                                  // const SizedBox(height: 10),
-                                                  // SizedBox(
-                                                  //   width: 120.0,
-                                                  //   child: Text(
-                                                  //     'Start From : Rp.' +
-                                                  //         post.start_from
-                                                  //             .toString(),
-                                                  //     maxLines: 2,
-                                                  //     overflow:
-                                                  //         TextOverflow.ellipsis,
-                                                  //     softWrap: false,
-                                                  //     style: TextStyle(
-                                                  //         fontSize: 11),
-                                                  //   ),
-                                                  // ),
                                                   const SizedBox(height: 10),
                                                   CountdownTimer(
                                                     endTime: DateTime.parse(post
                                                                 .end_auction)
                                                             .millisecondsSinceEpoch +
-                                                        1000 * 30,
+                                                        10 * 30,
                                                     widgetBuilder: (_,
                                                         CurrentRemainingTime?
                                                             time) {
@@ -181,7 +161,7 @@ class _HomeState extends State<Home> {
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
                                                                       .center,
-                                                              children: [
+                                                              children: const [
                                                                 Icon(
                                                                   Icons
                                                                       .timer_outlined,
@@ -197,7 +177,7 @@ class _HomeState extends State<Home> {
                                                                 MainAxisAlignment
                                                                     .center,
                                                             children: [
-                                                              Icon(
+                                                              const Icon(
                                                                 Icons
                                                                     .timer_outlined,
                                                               ),
@@ -211,28 +191,70 @@ class _HomeState extends State<Home> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             10),
-                                                    child: ElevatedButton(
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        minimumSize: const Size
-                                                            .fromHeight(50),
-                                                        primary: const Color(
-                                                            0xFF696cff), // background
-                                                        onPrimary: Colors
-                                                            .white, // foreground
-                                                      ),
-                                                      onPressed: () {
-                                                        developer
-                                                            .log('In Click');
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (context) =>
-                                                                    Details(
-                                                                        id: post
-                                                                            .id)));
+                                                    child: CountdownTimer(
+                                                      endTime: DateTime.parse(post
+                                                                  .end_auction)
+                                                              .millisecondsSinceEpoch +
+                                                          10 * 30,
+                                                      widgetBuilder: (_,
+                                                          CurrentRemainingTime?
+                                                              time) {
+                                                        if (time == null) {
+                                                          return ElevatedButton(
+                                                            style:
+                                                                ElevatedButton
+                                                                    .styleFrom(
+                                                              minimumSize:
+                                                                  const Size
+                                                                      .fromHeight(50),
+                                                              // ignore: prefer_const_constructors
+                                                              primary: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      236,
+                                                                      72,
+                                                                      7), // background
+                                                              onPrimary: Colors
+                                                                  .white, // foreground
+                                                            ),
+                                                            onPressed: () {
+                                                              developer.log(
+                                                                  'In Click');
+                                                              Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          Details(
+                                                                              id: post.id)));
+                                                            },
+                                                            child: const Text(
+                                                                'Expired'),
+                                                          );
+                                                        }
+                                                        return ElevatedButton(
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                            minimumSize: const Size
+                                                                .fromHeight(50),
+                                                            primary: const Color(
+                                                                0xFF696cff), // background
+                                                            onPrimary: Colors
+                                                                .white, // foreground
+                                                          ),
+                                                          onPressed: () {
+                                                            developer.log(
+                                                                'In Click');
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (context) =>
+                                                                        Details(
+                                                                            id: post.id)));
+                                                          },
+                                                          child:
+                                                              const Text('Bid'),
+                                                        );
                                                       },
-                                                      child: const Text('Bid'),
                                                     ),
                                                   )
                                                 ],

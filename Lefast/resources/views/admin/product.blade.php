@@ -227,6 +227,15 @@
                                 placeholder="Enter name product" required>
                         </div>
                         <div class="mb-3">
+                            <label for="category" class="form-label">cateegory</label>
+                           <select name="category" id="category" class="form-select">
+    <option value="">Choose Category</option>
+    @foreach (DB::table('categories')->get() as $item)
+        <option value="{{ $item->id }}">{{ $item->name }}</option>
+    @endforeach
+</select>
+                        </div>
+                        <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                             <textarea name="description" id="description" cols="30" rows="10" class="form-control editor"></textarea>
                         </div>

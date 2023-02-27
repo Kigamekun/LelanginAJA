@@ -220,7 +220,9 @@
             firebase.database().ref('chat/' + id).remove();
         }
         $('#submit').on('click', function() {
-            var userID = lastIndex + 1;
+            
+             if( $('#chat').val() !== '') {
+                 var userID = lastIndex + 1;
             console.log('ada');
             var x = firebase.database().ref('chat/' + userID).set({
                 for: @json($id),
@@ -235,6 +237,11 @@
             objDiv.scrollTop = objDiv.scrollHeight;
             lastIndex = userID;
             $('#chat').val('');
+             }
+            
+            
+            
+            
         });
     </script>
     <script>

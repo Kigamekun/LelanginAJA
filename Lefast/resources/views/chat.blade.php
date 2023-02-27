@@ -144,30 +144,9 @@
                         if (value.for == 0) {
                             if (value.from == @json(Auth::id())) {
                                 $('#list-chat').append(
-                                    `<div class="row mb-2">
-                                <div class="col-md-6">
-                                    <div class="card mb-3">
-                                        <div class="row g-0">
-                                            <div class="col-md-12">
-                                                <div class="card-body">
-                                                    <p class="card-text">
-                                                        ${value.chat}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>`
-                                );
-                            }
-                            displayed.push(index);
-                        }
-                        if (value.from == 0) {
-                            if (value.for == @json(Auth::id())) {
-                                $('#list-chat').append(
                                     `
-                            <div class="d-flex justify-end w-100" style="justify-content: end">
+                            
+                              <div class="d-flex justify-end w-100" style="justify-content: end">
                                 <div class="col-md-6">
                                     <div class="card mb-3" style="background:#696cff;color:white;">
                                         <div class="row g-0">
@@ -182,6 +161,31 @@
                                     </div>
                                 </div>
                             </div>
+                            `
+                                );
+                            }
+                            displayed.push(index);
+                        }
+                        if (value.from == 0) {
+                            if (value.for == @json(Auth::id())) {
+                                $('#list-chat').append(
+                                    `
+                          <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="row g-0">
+                                            <div class="col-md-12">
+                                                <div class="card-body">
+                                                    <p class="card-text">
+                                                        ${value.chat}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             `
                                 );
                             }
@@ -205,7 +209,8 @@
             firebase.database().ref('chat/' + id).remove();
         }
         $('#submit').on('click', function() {
-            var userID = lastIndex + 1;
+            if( $('#chat').val() !== '') {
+                var userID = lastIndex + 1;
             console.log('ada');
             var x = firebase.database().ref('chat/' + userID).set({
                 for: 0,
@@ -220,6 +225,7 @@
             objDiv.scrollTop = objDiv.scrollHeight;
             lastIndex = userID;
             $('#chat').val('');
+            }
         });
     </script>
     <script>

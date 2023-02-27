@@ -49,6 +49,7 @@ Route::get('/', function () {
 
 Route::get('/auction-list', [CoreController::class, 'auctionList'])->name('auction-list');
 
+Route::match(['get', 'post'],'/refresh', [CoreController::class, 'refresh'])->name('refresh');
 Route::get('/search', [CoreController::class, 'search'])->name('search');
 Route::get('/filter', [CoreController::class, 'filter'])->name('filter');
 Route::get('/detail/{id}', [CoreController::class, 'detail'])->name('detail');
@@ -116,7 +117,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','checkRole:2,3'])->gr
         Route::get('/delete/{id}', [CategoryController::class,'destroy'])->name('category.delete');
     });
 
-    Route::prefix('user')->group(function () {
+    Route::prefix('user')->middleware(['auth','checkRole:3'])->group(function () {
         Route::get('/', [UserController::class,'index'])->name('user.index');
         Route::get('/create', [UserController::class,'create'])->name('user.create');
         Route::post('/store', [UserController::class,'store'])->name('user.store');
@@ -128,7 +129,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','checkRole:2,3'])->gr
     Route::prefix('auction')->group(function () {
         Route::get('/', [AuctionController::class,'index'])->name('auction.index');
         Route::get('/create', [AuctionController::class,'create'])->name('auction.create');
-        Route::get('/invoice/{id}', [AuctionController::class,'invoice'])->name('auction.invoice');
+        Route::get('/invoice/{id}', [AuctionController::class,'invoice'])->name('auction.invoice')->withoutMiddleware(['auth','checkRole:2,3']);
         Route::post('/store', [AuctionController::class,'store'])->name('auction.store');
         Route::get('/edit/{id}', [AuctionController::class,'edit'])->name('auction.edit');
         Route::post('/ship/{id}', [AuctionController::class,'ship'])->name('auction.ship');

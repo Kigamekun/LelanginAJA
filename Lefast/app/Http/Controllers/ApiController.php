@@ -37,14 +37,14 @@ class ApiController extends Controller
             return response()->json(['data'=>$data], 200)->header('Content-Type', 'application/json');
         } else {
             if (isset($_GET['q'])) {
-                $data = Product::select('id', 'name', 'start_from','end_auction','status','thumb')->where('name', 'LIKE', '%'.$_GET['q'].'%')->get();
+                $data = Product::select('id', 'name', 'start_from','end_auction','status','thumb')->where('name', 'LIKE', '%'.$_GET['q'].'%')->orderBy('end_auction','DESC')->get();
                 $solve = [];
                 foreach ($data as $key => $value) {
                     $solve[$key]= $value;
                     $solve[$key]['thumb'] = env('API_URL').'/thumb/'.$value->thumb;
                 }
             } else {
-                $data = Product::select('id', 'name', 'start_from','end_auction','status','thumb')->get();
+                $data = Product::select('id', 'name', 'start_from','end_auction','status','thumb')->orderBy('end_auction','DESC')->get();
                 $solve = [];
                 foreach ($data as $key => $value) {
                     $solve[$key]= $value;
@@ -198,7 +198,7 @@ class ApiController extends Controller
         
 
         if ($validator->fails()) {
-            return response()->json($validator->errors())->header('Content-Type', 'application/json');
+            return response()->json(['message'=>$validator->errors()->first()],401)->header('Content-Type', 'application/json');
         }
 
  $back = sprintf('%06X', mt_rand(0xFF9999, 0xFFFF00));
@@ -221,6 +221,7 @@ class ApiController extends Controller
 
     public function login(Request $request)
     {
+        
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()
                 ->json(['message' => 'Unauthorized'], 401)->header('Content-Type', 'application/json');

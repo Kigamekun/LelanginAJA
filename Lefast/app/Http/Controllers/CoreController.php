@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\{WinnerAuctionMail};
 use Illuminate\Support\Facades\Mail;
 use App\Rules\GreatherThanMaxBid;
-
+use Carbon\Carbon;
 class CoreController extends Controller
 {
     public function detail($id)
@@ -22,7 +22,10 @@ class CoreController extends Controller
      public function history()
     {
         $data = Auction::where('user_id', Auth::id())->get();
-
+        return view('history', ['data'=>$data]);
+    }
+    
+    public function refresh(){
         
         foreach (Auction::where('snap_token', '!=', null)->where('payment_status',1)->get() as $key => $value) {
             $curl = curl_init();
@@ -76,9 +79,9 @@ class CoreController extends Controller
             }
 
         }
-
-        return view('history', ['data'=>$data]);
+        return redirect()->route('history');
     }
+    
     
     public function addBookmark(Request $request)
     {
@@ -110,15 +113,28 @@ class CoreController extends Controller
                     })->select('products.*', 'bookmarks.id as bookmarked')->get();
                 }
 
-                if (isset($_GET['status'])) {
-                    $data = Product::where('status', $_GET['status']);
-                }
-                if (isset($_GET['lower']) && isset($_GET['upper'])) {
+                if (isset($_GET['status']) && $_GET['status'] != 'Status') {
+                    if($_GET['status'] == 0){
+                        $data = Product::where('end_auction','<=', Carbon::now());
+                        
+                    } else {
+                        $data = Product::where('end_auction','>', Carbon::now());
+                    }
+                    
+                    if (isset($_GET['lower']) && isset($_GET['upper'])) {
                     $data = $data->where('start_from', '>=', $_GET['lower'])->where('start_from', '<=', $_GET['upper'])->leftJoin('bookmarks', function ($join) {
                         $join->on('products.id', '=', 'bookmarks.product_id');
                         $join->on('bookmarks.user_id', '=', DB::raw(Auth::user()->id));
                     })->select('products.*', 'bookmarks.id as bookmarked')->get();
                 }
+                
+                } else if (isset($_GET['status']) && $_GET['status'] == 'Status'){
+                    $data = Product::where('start_from', '>=', $_GET['lower'])->where('start_from', '<=', $_GET['upper'])->leftJoin('bookmarks', function ($join) {
+                        $join->on('products.id', '=', 'bookmarks.product_id');
+                        $join->on('bookmarks.user_id', '=', DB::raw(Auth::user()->id));
+                    })->select('products.*', 'bookmarks.id as bookmarked')->get();
+                } 
+                
             }
         } else {
             if (empty($_GET)) {
