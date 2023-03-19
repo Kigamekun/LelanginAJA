@@ -1,0 +1,4 @@
+[20-Feb-2023 05:30:47 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.1.0". You are running 8.0.27. in /home/lelangin/laravel/vendor/composer/platform_check.php on line 24
+[13-Mar-2023 11:37:16 Asia/Jakarta] PHP Fatal error:  Cannot use App\Models\Product as Product because the name is already in use in /home/lelangin/laravel/app/Http/Controllers/ApiController.php on line 10
+[13-Mar-2023 11:37:16 Asia/Jakarta] PHP Fatal error:  Cannot use App\Models\Product as Product because the name is already in use in /home/lelangin/laravel/app/Http/Controllers/ApiController.php on line 10
+[13-Mar-2023 11:37:16 Asia/Jakarta] PHP Fatal error:  Cannot use App\Models\Product as Product because the name is already in use in /home/lelangin/laravel/app/Http/Controllers/ApiController.php on line 10
